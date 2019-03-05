@@ -1,0 +1,14 @@
+int x[100], y, z;
+boolean a[100],b;
+void var;
+
+void foo( int x[], boolean y, void z )
+begin 
+    int x, y, z;
+    boolean y[10];
+end
+
+int main( void )
+begin 
+
+end

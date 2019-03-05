@@ -1,0 +1,9 @@
+int count;
+int bar;
+int x;
+int y;
+int z;
+count = 5
+count
+bar = 12
+count + bar

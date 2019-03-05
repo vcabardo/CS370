@@ -1,0 +1,27 @@
+int x, y, z[20];
+int main(void)
+begin
+    y = x * y;
+    y and x;
+    y or x;
+    y < x;
+    y > x;
+    y <= x;
+    y >= x;
+    y != x;
+    y == x;
+    y = x;
+    
+    if( foo( a, b ) )
+    then return;
+    else x = x - (y*3) + (z/2);
+    
+    while( x <  )
+    do x = x+ 1;
+    
+    return 123;
+    
+    read x;
+    
+    write x;
+end
