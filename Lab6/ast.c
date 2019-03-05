@@ -76,7 +76,9 @@ void ASTprint(int level,ASTnode *p)
                 
                 printf( ")\n" );
                 
-                ASTprint( level, p->s2 ); //print the block statement
+                ASTprint( level + 1, p->s2 ); //print the block statement
+                
+                printf( "\n" );
                 
                 break; 
            
@@ -110,7 +112,19 @@ void ASTprint(int level,ASTnode *p)
                 
        case BLOCK:
                 printf( "BLOCK STATEMENT\n");
+                ASTprint( level, p->s1 );//print localdecs
+                ASTprint( level, p->s2 );//print statlist
                 break;
+                
+       case EXPRESS:
+                printf( "EXPR " );
+                ASTprint( level, p->s1 ); 
+                break;
+                
+        case NUM:
+                printf( "NUMBER with value %d", p->value );
+                break;
+                        
            
         default: printf("unknown type in ASTprint\n");
         

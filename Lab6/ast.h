@@ -20,12 +20,23 @@ enum ASTtype {
     VARDEC,
     FUNDEC,
     PARAM,
-    BLOCK
+    BLOCK,
+    EXPRESS,
+    NUM
 };
 
 
 enum OPERATORS {
-    PLUS
+    PLUS,
+    MINUS,
+    MULTIPLY,
+    DIVIDE,
+    ANDOP,
+    OROP,
+    LT,
+    GT,
+    LTEQ,
+    GTEQ
 };
 
 enum SYSTEMTYPES {

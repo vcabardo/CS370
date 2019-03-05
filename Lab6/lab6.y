@@ -50,7 +50,7 @@ void yyerror (s)  /* Called by yyparse on error */
 %token LTE GTE E NE 
 
 /*define the types of some of the so that we can build nodes in the semantic actions for those productions or pass the reference to certain nodes to different productions*/
-%type<node> PROGRAM DECLIST DECLARATION VAR_DEC VAR_LIST FUN_DEC CMPD_STMT PARAMS PARAM_LIST PARAM LOCAL_DECS STAT_LIST STAT
+%type<node> PROGRAM DECLIST DECLARATION VAR_DEC VAR_LIST FUN_DEC CMPD_STMT PARAMS PARAM_LIST PARAM LOCAL_DECS STAT STAT_LIST EXPR_STMT EXPR SIMP_EXPR ADD_EXPR TERM FACTOR
 
 %%	/* end specs, begin rules */
 
@@ -184,36 +184,47 @@ PARAM           :   TYPE ID
 CMPD_STMT       :   BEG LOCAL_DECS STAT_LIST END
                     {
                         $$ = ASTCreateNode( BLOCK );
-                        //?????????????????????????????????????????????????????????????
-                        //$$->s1 = $2;
-                        //$$->s2 = $3;
+                        $$->s1 = $2;
+                        $$->s2 = $3;
                     }
                 ;
                 
 /*local-declaration -> { var-declarations }*/
 LOCAL_DECS      :   /*EMPTY*/   { $$ = NULL; }
                 |   VAR_DEC LOCAL_DECS
+                    {
+                        $$ = $1;
+                        $$->next = $2;
+                    }
                 ;
                 
 /*statement-list -> { statement }*/
 STAT_LIST       :   /*EMPTY*/   { $$ = NULL; }
                 |   STAT STAT_LIST
+                    {
+                        $$ = $1;
+                        $$->next = $2;
+                    }
                 ;
                 
 /*statement -> expression-stmt | compound-stmt | selection-stmt | iteration-stmt | assignment-stmt | return-stmt | read-stmt | write-stmt*/
-STAT            :   EXPR_STMT
+STAT            :   EXPR_STMT       { $$ = $1; }
                 |   CMPD_STMT
-                |   SELECT_STMT
+                |   SELECT_STMT 
                 |   ITER_STMT
                 |   ASSIGN_STMT
                 |   RETURN_STMT
-                |   READ_STMT
-                |   WRITE_STMT
+                |   READ_STMT      
+                |   WRITE_STMT      
                 ;
                 
 /*expression-stmt -> expression ; | ;*/
-EXPR_STMT       :   EXPR ';'
-                |   ';' 
+EXPR_STMT       :   EXPR ';'  
+                    {
+                        $$ = ASTCreateNode( EXPRESS );
+                        $$->s1 = $1; //this expr node will reference all of the elements of the expression it represents, such as numbers, operations, etc.
+                    }
+                |   ';' { $$ = NULL; }
                 ;
                 
 /*selection-stmt -> if expression then statement [ else statement ]*/
@@ -243,7 +254,7 @@ ASSIGN_STMT     :   VAR '=' SIMP_EXPR ';'
                 ;
                 
 /*expression -> simple-expression*/
-EXPR            :   SIMP_EXPR
+EXPR            :   SIMP_EXPR  { $$ = $1;}
                 ;
                 
 /*var -> ID [ [ expression ] ] */
@@ -252,7 +263,7 @@ VAR             :   ID
                 ;
                 
 /*simple-expression -> additive-expression [ relop additive-expression ]*/
-SIMP_EXPR       :   ADD_EXPR
+SIMP_EXPR       :   ADD_EXPR   { $$ = $1; }
                 |   ADD_EXPR RELOP ADD_EXPR
                 ;
                 
@@ -266,7 +277,7 @@ RELOP           :   LTE
                 ;
                 
 /*additive-expression -> term { addop term }*/
-ADD_EXPR        :   TERM
+ADD_EXPR        :   TERM    { $$ = $1; }
                 |   ADD_EXPR ADDOP TERM
                 ;
                 
@@ -276,7 +287,7 @@ ADDOP           :   '+'
                 ;
                 
 /*term -> factor { multop factor }*/
-TERM            :   FACTOR 
+TERM            :   FACTOR { $$ = $1; } 
                 |   TERM MULTOP FACTOR
                 ;
                 
@@ -290,6 +301,10 @@ MULTOP          :   '*'
 /* factor -> ( expression ) | NUM | var | call | true | false | not factor*/
 FACTOR          :   '(' EXPR ')'
                 |   NUMBER
+                    { 
+                        $$ = ASTCreateNode( NUM );
+                        $$->value = $1;
+                    }
                 |   VAR
                 |   CALL 
                 |   TRUE

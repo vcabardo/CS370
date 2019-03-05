@@ -510,12 +510,12 @@ static const yytype_uint16 yyrline[] =
 {
        0,    58,    58,    65,    69,    78,    82,    90,   101,   107,
      114,   121,   134,   135,   136,   142,   154,   159,   163,   164,
-     168,   174,   184,   194,   195,   199,   200,   204,   205,   206,
-     207,   208,   209,   210,   211,   215,   216,   220,   221,   225,
-     229,   230,   234,   238,   242,   246,   250,   251,   255,   256,
-     260,   261,   262,   263,   264,   265,   269,   270,   274,   275,
-     279,   280,   284,   285,   286,   287,   291,   292,   293,   294,
-     295,   296,   297,   301,   305,   306,   310,   311
+     168,   174,   184,   193,   194,   202,   203,   211,   212,   213,
+     214,   215,   216,   217,   218,   222,   227,   231,   232,   236,
+     240,   241,   245,   249,   253,   257,   261,   262,   266,   267,
+     271,   272,   273,   274,   275,   276,   280,   281,   285,   286,
+     290,   291,   295,   296,   297,   298,   302,   303,   308,   309,
+     310,   311,   312,   316,   320,   321,   325,   326
 };
 #endif
 
@@ -1555,27 +1555,98 @@ yyreduce:
 #line 185 "lab6.y" /* yacc.c:1652  */
     {
                         (yyval.node) = ASTCreateNode( BLOCK );
-                        //?????????????????????????????????????????????????????????????
-                        //$$->s1 = $2;
-                        //$$->s2 = $3;
+                        (yyval.node)->s1 = (yyvsp[-2].node);
+                        (yyval.node)->s2 = (yyvsp[-1].node);
                     }
-#line 1563 "y.tab.c" /* yacc.c:1652  */
+#line 1562 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 23:
-#line 194 "lab6.y" /* yacc.c:1652  */
+#line 193 "lab6.y" /* yacc.c:1652  */
     { (yyval.node) = NULL; }
-#line 1569 "y.tab.c" /* yacc.c:1652  */
+#line 1568 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 24:
+#line 195 "lab6.y" /* yacc.c:1652  */
+    {
+                        (yyval.node) = (yyvsp[-1].node);
+                        (yyval.node)->next = (yyvsp[0].node);
+                    }
+#line 1577 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 25:
-#line 199 "lab6.y" /* yacc.c:1652  */
+#line 202 "lab6.y" /* yacc.c:1652  */
     { (yyval.node) = NULL; }
-#line 1575 "y.tab.c" /* yacc.c:1652  */
+#line 1583 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 26:
+#line 204 "lab6.y" /* yacc.c:1652  */
+    {
+                        (yyval.node) = (yyvsp[-1].node);
+                        (yyval.node)->next = (yyvsp[0].node);
+                    }
+#line 1592 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 27:
+#line 211 "lab6.y" /* yacc.c:1652  */
+    { (yyval.node) = (yyvsp[0].node); }
+#line 1598 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 35:
+#line 223 "lab6.y" /* yacc.c:1652  */
+    {
+                        (yyval.node) = ASTCreateNode( EXPRESS );
+                        (yyval.node)->s1 = (yyvsp[-1].node); //this expr node will reference all of the elements of the expression it represents, such as numbers, operations, etc.
+                    }
+#line 1607 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 36:
+#line 227 "lab6.y" /* yacc.c:1652  */
+    { (yyval.node) = NULL; }
+#line 1613 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 45:
+#line 257 "lab6.y" /* yacc.c:1652  */
+    { (yyval.node) = (yyvsp[0].node);}
+#line 1619 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 48:
+#line 266 "lab6.y" /* yacc.c:1652  */
+    { (yyval.node) = (yyvsp[0].node); }
+#line 1625 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 56:
+#line 280 "lab6.y" /* yacc.c:1652  */
+    { (yyval.node) = (yyvsp[0].node); }
+#line 1631 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 60:
+#line 290 "lab6.y" /* yacc.c:1652  */
+    { (yyval.node) = (yyvsp[0].node); }
+#line 1637 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 67:
+#line 304 "lab6.y" /* yacc.c:1652  */
+    { 
+                        (yyval.node) = ASTCreateNode( NUM );
+                        (yyval.node)->value = (yyvsp[0].number);
+                    }
+#line 1646 "y.tab.c" /* yacc.c:1652  */
     break;
 
 
-#line 1579 "y.tab.c" /* yacc.c:1652  */
+#line 1650 "y.tab.c" /* yacc.c:1652  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1806,7 +1877,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 315 "lab6.y" /* yacc.c:1918  */
+#line 330 "lab6.y" /* yacc.c:1918  */
 	/* end of rules, start of program */
 
 int main()

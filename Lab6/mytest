@@ -6,6 +6,8 @@ void foo( int x[], boolean y, void z )
 begin 
     int x, y, z;
     boolean y[10];
+    void a, b, c;
+    42 + 42;
 end
 
 int main( void )
