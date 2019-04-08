@@ -4,13 +4,18 @@ void var;
 
 void foo( int x[], boolean y, void z )
 begin 
-    int x, y, z;
-    boolean y[10];
-    void a, b, c;
-    42 + 42;
+    int x;
 end
 
 int main( void )
 begin 
-
+    read y;
+    x < y[1 + 2 - 3 * 4 / 5 ] + 42;
+    return x * y;
+    write 1 * 2 * 3;
+    x = y + 8;
+    foo( a + 2, b, c, d, e, f, g );
+    while x == 2 do x = x + 1;
+    if true then x = x+1;
+    else (z);
 end

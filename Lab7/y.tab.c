@@ -66,32 +66,42 @@
 
 
 /* First part of user prologue.  */
-#line 1 "lab6.y" /* yacc.c:337  */
+#line 1 "lab7.y" /* yacc.c:337  */
+
 
 /*Name: Vensan Cabardo
-  Date: 3-11-2019
+  Date: 2-25-2019
   Course: CS370 Compilers 
-  Description: This program takes a stream of tokens from lex and checks for syntac correctness. Additionally, it creates an immediate representation in the form of an AST. At the end of parsing the final AST is stored in the global variable myprogram. 
-  Input: A stream of tokens
-  Output: An AST is built and its contents are output by utilizing the print routine on myprogram. 
+  Description:  YACC program that defines the syntax rules for an ALGOL like language - this program parses only for syntactical correctness, there are no syntax directed semantic actions.
+  Input: A stream of tokens from LEX
+  Output: This program will print the line number of a syntax error if applicable, and will otherwise give the user a message stating that their program was syntactically correct.
 */
 
 
 	/* begin specs */
 #include <stdio.h>
+#include <stdlib.h>
 #include <ctype.h>
+#include "symtable.h"
 #include "ast.h"
-#include "y.tab.h"
+
+#define TYPE_SCALAR 0
+#define TYPE_ARRAY 1
+#define TYPE_FUNCTION 2
 
 struct ASTnodetype *myprogram = NULL;
-enum SYSTEMTYPES Cur_Type; // used to maintain type during type variable declaration
-
+int level = 0; //this variable will be used in the symbol table to handle variable scope
+int goffset = 0;
+int offset = 0;
+int maxoffset = 0;
 /*lineCount is a variable that will be accessed from and incremented in LEX. This line allows YACC to access it and use it to print error messages*/
 extern int lineCount; 
 
 int yylex();
+int max( int, int );
+int CompareParams( ASTnode*, ASTnode* );
 
-int base, debugsw = 1;
+int base, debugsw = 0;
 
 void yyerror (s)  /* Called by yyparse on error */
      char *s;
@@ -100,7 +110,7 @@ void yyerror (s)  /* Called by yyparse on error */
 }
 
 
-#line 104 "y.tab.c" /* yacc.c:337  */
+#line 114 "y.tab.c" /* yacc.c:337  */
 # ifndef YY_NULLPTR
 #  if defined __cplusplus
 #   if 201103L <= __cplusplus
@@ -155,13 +165,13 @@ extern int yydebug;
     TRUE = 272,
     FALSE = 273,
     NOT = 274,
-    INT = 275,
-    VOID = 276,
-    BOOLEAN = 277,
-    LTE = 278,
-    GTE = 279,
-    E = 280,
-    NE = 281
+    LTE = 275,
+    GTE = 276,
+    E = 277,
+    NE = 278,
+    INT = 279,
+    VOID = 280,
+    BOOLEAN = 281
   };
 #endif
 /* Tokens.  */
@@ -182,27 +192,28 @@ extern int yydebug;
 #define TRUE 272
 #define FALSE 273
 #define NOT 274
-#define INT 275
-#define VOID 276
-#define BOOLEAN 277
-#define LTE 278
-#define GTE 279
-#define E 280
-#define NE 281
+#define LTE 275
+#define GTE 276
+#define E 277
+#define NE 278
+#define INT 279
+#define VOID 280
+#define BOOLEAN 281
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 
 union YYSTYPE
 {
-#line 39 "lab6.y" /* yacc.c:352  */
+#line 49 "lab7.y" /* yacc.c:352  */
 
     int number; //treat token as a 32 bit integer
     char *string; //treat token as a 32 bit pointer to a string
     struct ASTnodetype *node; //allow AST nodes to be constructed by the program 
     enum OPERATORS operator;
+    enum SYSTEMTYPES type;
 
-#line 206 "y.tab.c" /* yacc.c:352  */
+#line 217 "y.tab.c" /* yacc.c:352  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -450,16 +461,16 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  10
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   123
+#define YYLAST   122
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  40
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  34
+#define YYNNTS  37
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  77
+#define YYNRULES  80
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  124
+#define YYNSTATES  127
 
 #define YYUNDEFTOK  2
 #define YYMAXUTOK   281
@@ -508,14 +519,15 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    61,    61,    68,    72,    81,    85,    93,   104,   110,
-     117,   124,   137,   138,   139,   145,   158,   163,   169,   170,
-     176,   182,   194,   205,   206,   216,   217,   227,   228,   229,
-     230,   231,   232,   233,   234,   239,   244,   251,   257,   270,
-     279,   283,   291,   299,   307,   316,   320,   325,   335,   336,
-     347,   348,   349,   350,   351,   352,   356,   357,   368,   369,
-     373,   374,   385,   386,   387,   388,   392,   396,   401,   402,
-     403,   409,   415,   424,   433,   434,   438,   443
+       0,    75,    75,    82,    86,    95,    99,   107,   124,   145,
+     167,   189,   218,   219,   220,   227,   237,   226,   262,   267,
+     276,   280,   289,   307,   332,   331,   348,   349,   359,   360,
+     370,   371,   372,   373,   374,   375,   376,   377,   382,   387,
+     394,   400,   413,   422,   426,   434,   442,   450,   474,   478,
+     504,   536,   537,   565,   566,   567,   568,   569,   570,   574,
+     575,   603,   604,   608,   609,   637,   638,   639,   640,   644,
+     648,   654,   655,   656,   663,   670,   679,   711,   712,   716,
+     722
 };
 #endif
 
@@ -526,15 +538,15 @@ static const char *const yytname[] =
 {
   "$end", "error", "$undefined", "NUMBER", "ID", "BEG", "END", "IF",
   "THEN", "ELSE", "WHILE", "DO", "RETURN", "READ", "WRITE", "AND", "OR",
-  "TRUE", "FALSE", "NOT", "INT", "VOID", "BOOLEAN", "LTE", "GTE", "E",
-  "NE", "';'", "'['", "']'", "','", "'('", "')'", "'='", "'<'", "'>'",
+  "TRUE", "FALSE", "NOT", "LTE", "GTE", "E", "NE", "INT", "VOID",
+  "BOOLEAN", "';'", "'['", "']'", "','", "'('", "')'", "'='", "'<'", "'>'",
   "'+'", "'-'", "'*'", "'/'", "$accept", "PROGRAM", "DECLIST",
-  "DECLARATION", "VAR_DEC", "VAR_LIST", "TYPE", "FUN_DEC", "PARAMS",
-  "PARAM_LIST", "PARAM", "CMPD_STMT", "LOCAL_DECS", "STAT_LIST", "STAT",
-  "EXPR_STMT", "SELECT_STMT", "ITER_STMT", "RETURN_STMT", "READ_STMT",
-  "WRITE_STMT", "ASSIGN_STMT", "EXPR", "VAR", "SIMP_EXPR", "RELOP",
-  "ADD_EXPR", "ADDOP", "TERM", "MULTOP", "FACTOR", "CALL", "ARGS",
-  "ARG_LIST", YY_NULLPTR
+  "DECLARATION", "VAR_DEC", "VAR_LIST", "TYPE", "FUN_DEC", "$@1", "$@2",
+  "PARAMS", "PARAM_LIST", "PARAM", "CMPD_STMT", "$@3", "LOCAL_DECS",
+  "STAT_LIST", "STAT", "EXPR_STMT", "SELECT_STMT", "ITER_STMT",
+  "RETURN_STMT", "READ_STMT", "WRITE_STMT", "ASSIGN_STMT", "EXPR", "VAR",
+  "SIMP_EXPR", "RELOP", "ADD_EXPR", "ADDOP", "TERM", "MULTOP", "FACTOR",
+  "CALL", "ARGS", "ARG_LIST", YY_NULLPTR
 };
 #endif
 
@@ -550,12 +562,12 @@ static const yytype_uint16 yytoknum[] =
 };
 # endif
 
-#define YYPACT_NINF -83
+#define YYPACT_NINF -68
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-83)))
+  (!!((Yystate) == (-68)))
 
-#define YYTABLE_NINF -17
+#define YYTABLE_NINF -19
 
 #define yytable_value_is_error(Yytable_value) \
   0
@@ -564,19 +576,19 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      68,   -83,   -83,   -83,    17,   -83,    68,   -83,    15,   -83,
-     -83,   -83,    13,     3,    39,    58,    71,   -83,    34,   -22,
-     -83,    43,    73,    46,   -83,    35,    52,    66,    92,    68,
-      58,    69,    68,   -83,   -83,   -83,   -83,    68,    58,     8,
-     -83,   -83,    30,    33,    33,    28,    95,    33,   -83,   -83,
-      33,   -83,    33,   -83,    94,     8,   -83,   -83,   -83,   -83,
-     -83,   -83,   -83,    74,    70,    61,    12,    18,   -83,   -83,
-      33,    33,    96,   -83,    91,   -83,    78,    79,    81,    82,
-     -83,    80,   -83,   -83,   -83,    33,   -83,   -83,   -83,   -83,
-     -83,   -83,    33,   -83,   -83,    33,   -83,   -83,   -83,   -83,
-      33,    77,    83,    84,   -83,     8,     8,   -83,   -83,   -83,
-     -83,    45,    12,    18,   -83,   -83,    33,   -83,   101,   -83,
-     -83,   -83,     8,   -83
+      62,   -68,   -68,   -68,    38,   -68,    62,   -68,    39,   -68,
+     -68,   -68,    32,    17,    72,    49,   -68,   -68,    36,    66,
+     -68,    65,    31,    37,    64,   -68,   -68,    46,    49,    54,
+      63,    62,   -68,    68,    93,   -68,   -68,   -68,   -68,    62,
+      62,    49,     8,   -68,   -68,   -14,    33,    33,    28,    95,
+      33,   -68,   -68,    33,   -68,    33,   -68,    94,     8,   -68,
+     -68,   -68,   -68,   -68,   -68,   -68,    74,    69,    58,   -28,
+      18,   -68,   -68,    33,    33,    96,   -68,    92,   -68,    78,
+      79,    81,    82,   -68,    80,   -68,   -68,   -68,    33,   -68,
+     -68,   -68,   -68,   -68,   -68,    33,   -68,   -68,    33,   -68,
+     -68,   -68,   -68,    33,    77,    83,    84,   -68,     8,     8,
+     -68,   -68,   -68,   -68,    50,   -28,    18,   -68,   -68,    33,
+     -68,   101,   -68,   -68,   -68,     8,   -68
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -585,36 +597,36 @@ static const yytype_int8 yypact[] =
 static const yytype_uint8 yydefact[] =
 {
        0,    12,    13,    14,     0,     2,     3,     5,     0,     6,
-       1,     4,     8,     0,     0,     0,     0,     7,     0,     8,
-      10,    13,     0,     0,    17,    18,     9,    20,     0,     0,
-       0,     0,    23,    15,    19,    11,    21,    23,     0,    25,
-      24,    67,    46,     0,     0,     0,     0,     0,    70,    71,
-       0,    36,     0,    28,     0,    25,    27,    29,    30,    32,
-      33,    34,    31,     0,    68,    45,    48,    56,    60,    69,
-       0,    75,     0,    68,     0,    40,     0,    46,     0,     0,
-      72,     0,    22,    26,    35,     0,    50,    53,    54,    55,
-      51,    52,     0,    58,    59,     0,    64,    65,    62,    63,
-       0,     0,    76,     0,    74,     0,     0,    41,    42,    43,
-      66,     0,    49,    57,    61,    47,     0,    73,    37,    39,
-      44,    77,     0,    38
+       1,     4,     8,     0,     0,     0,    15,     7,     0,     8,
+      10,     0,     9,    13,     0,    16,    19,    20,     0,    22,
+       0,     0,    11,     0,     0,    21,    23,    24,    17,    26,
+      26,     0,    28,    27,    70,    49,     0,     0,     0,     0,
+       0,    73,    74,     0,    39,     0,    31,     0,    28,    30,
+      32,    33,    35,    36,    37,    34,     0,    71,    48,    51,
+      59,    63,    72,     0,    78,     0,    71,     0,    43,     0,
+      49,     0,     0,    75,     0,    25,    29,    38,     0,    53,
+      56,    57,    58,    54,    55,     0,    61,    62,     0,    67,
+      68,    65,    66,     0,     0,    79,     0,    77,     0,     0,
+      44,    45,    46,    69,     0,    52,    60,    64,    50,     0,
+      76,    40,    42,    47,    80,     0,    41
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -83,   -83,   105,   -83,   -23,    23,    44,   -83,   -83,    85,
-     -83,    87,    86,    62,   -82,   -83,   -83,   -83,   -83,   -83,
-     -83,   -83,   -42,   -39,    36,   -83,    26,   -83,    24,   -83,
-     -46,   -83,   -83,     4
+     -68,   -68,   105,   -68,   -16,    -9,     9,   -68,   -68,   -68,
+     -68,    86,   -68,    85,   -68,    75,    56,   -67,   -68,   -68,
+     -68,   -68,   -68,   -68,   -68,   -45,   -42,    30,   -68,    25,
+     -68,    23,   -68,   -49,   -68,   -68,     3
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     4,     5,     6,     7,    13,     8,     9,    23,    24,
-      25,    53,    39,    54,    55,    56,    57,    58,    59,    60,
-      61,    62,    63,    73,    65,    92,    66,    95,    67,   100,
-      68,    69,   103,   104
+      -1,     4,     5,     6,     7,    13,     8,     9,    21,    30,
+      25,    26,    27,    56,    39,    42,    57,    58,    59,    60,
+      61,    62,    63,    64,    65,    66,    76,    68,    95,    69,
+      98,    70,   103,    71,    72,   106,   107
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -622,81 +634,83 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-      64,    72,    74,    76,    80,    79,    14,    78,    15,    37,
-      81,    41,    42,    32,    37,    43,    64,    10,    44,    12,
-      45,    46,    47,   118,   119,    48,    49,    50,   101,   102,
-      17,    41,    42,    96,    97,    51,    41,    42,    20,    52,
-     123,    14,    18,    15,    16,    48,    49,    50,    93,    94,
-      48,    49,    50,    35,   114,    75,    98,    99,    70,    52,
-      22,    71,    19,    26,    52,    29,    64,    64,    86,    87,
-      88,    89,   120,    22,   102,   -16,    38,    27,    28,    90,
-      91,    38,    30,    64,    86,    87,    88,    89,     1,     2,
-       3,     1,    21,     3,    31,    90,    91,    32,    36,    77,
-      82,    84,   106,    85,   105,   107,   115,    70,   108,   109,
-     122,    11,   110,   116,    34,    33,   117,    83,   112,   113,
-     121,   111,     0,    40
+      67,    75,    77,    79,    83,    82,    20,    81,    96,    97,
+      84,    44,    45,    37,    73,    46,    67,    74,    47,    32,
+      48,    49,    50,    40,    40,    51,    52,    53,   104,   105,
+      24,    44,    45,    99,   100,    54,    44,    45,    10,    55,
+      24,   121,   122,    12,    17,    51,    52,    53,    41,    41,
+      51,    52,    53,    19,   117,    78,   101,   102,   126,    55,
+      14,    28,    15,    16,    55,    22,    67,    67,    29,   -18,
+      89,    90,    91,    92,   105,    18,    31,   123,    89,    90,
+      91,    92,    33,    67,    93,    94,     1,     2,     3,     1,
+      23,     3,    93,    94,    14,    34,    15,    36,    37,    80,
+      85,    87,    88,   109,   108,   110,   118,    73,   111,   112,
+     125,    11,   113,   119,    86,    43,   120,    35,   114,    38,
+     115,   116,   124
 };
 
-static const yytype_int8 yycheck[] =
+static const yytype_uint8 yycheck[] =
 {
-      39,    43,    44,    45,    50,    47,    28,    46,    30,    32,
-      52,     3,     4,     5,    37,     7,    55,     0,    10,     4,
-      12,    13,    14,   105,   106,    17,    18,    19,    70,    71,
-      27,     3,     4,    15,    16,    27,     3,     4,    15,    31,
-     122,    28,     3,    30,    31,    17,    18,    19,    36,    37,
-      17,    18,    19,    30,   100,    27,    38,    39,    28,    31,
-      16,    31,     4,    29,    31,    30,   105,   106,    23,    24,
-      25,    26,    27,    29,   116,    32,    32,     4,    32,    34,
-      35,    37,    30,   122,    23,    24,    25,    26,    20,    21,
-      22,    20,    21,    22,    28,    34,    35,     5,    29,     4,
-       6,    27,    11,    33,     8,    27,    29,    28,    27,    27,
-       9,     6,    32,    30,    29,    28,    32,    55,    92,    95,
-     116,    85,    -1,    37
+      42,    46,    47,    48,    53,    50,    15,    49,    36,    37,
+      55,     3,     4,     5,    28,     7,    58,    31,    10,    28,
+      12,    13,    14,    39,    40,    17,    18,    19,    73,    74,
+      21,     3,     4,    15,    16,    27,     3,     4,     0,    31,
+      31,   108,   109,     4,    27,    17,    18,    19,    39,    40,
+      17,    18,    19,     4,   103,    27,    38,    39,   125,    31,
+      28,    30,    30,    31,    31,    29,   108,   109,     4,    32,
+      20,    21,    22,    23,   119,     3,    30,    27,    20,    21,
+      22,    23,    28,   125,    34,    35,    24,    25,    26,    24,
+      25,    26,    34,    35,    28,    32,    30,    29,     5,     4,
+       6,    27,    33,    11,     8,    27,    29,    28,    27,    27,
+       9,     6,    32,    30,    58,    40,    32,    31,    88,    34,
+      95,    98,   119
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,    20,    21,    22,    41,    42,    43,    44,    46,    47,
+       0,    24,    25,    26,    41,    42,    43,    44,    46,    47,
        0,    42,     4,    45,    28,    30,    31,    27,     3,     4,
-      45,    21,    46,    48,    49,    50,    29,     4,    32,    30,
-      30,    28,     5,    51,    49,    45,    29,    44,    46,    52,
-      52,     3,     4,     7,    10,    12,    13,    14,    17,    18,
-      19,    27,    31,    51,    53,    54,    55,    56,    57,    58,
-      59,    60,    61,    62,    63,    64,    66,    68,    70,    71,
-      28,    31,    62,    63,    62,    27,    62,     4,    63,    62,
-      70,    62,     6,    53,    27,    33,    23,    24,    25,    26,
-      34,    35,    65,    36,    37,    67,    15,    16,    38,    39,
-      69,    62,    62,    72,    73,     8,    11,    27,    27,    27,
-      32,    64,    66,    68,    70,    29,    30,    32,    54,    54,
-      27,    73,     9,    54
+      45,    48,    29,    25,    46,    50,    51,    52,    30,     4,
+      49,    30,    45,    28,    32,    51,    29,     5,    53,    54,
+      44,    46,    55,    55,     3,     4,     7,    10,    12,    13,
+      14,    17,    18,    19,    27,    31,    53,    56,    57,    58,
+      59,    60,    61,    62,    63,    64,    65,    66,    67,    69,
+      71,    73,    74,    28,    31,    65,    66,    65,    27,    65,
+       4,    66,    65,    73,    65,     6,    56,    27,    33,    20,
+      21,    22,    23,    34,    35,    68,    36,    37,    70,    15,
+      16,    38,    39,    72,    65,    65,    75,    76,     8,    11,
+      27,    27,    27,    32,    67,    69,    71,    73,    29,    30,
+      32,    57,    57,    27,    76,     9,    57
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
        0,    40,    41,    42,    42,    43,    43,    44,    45,    45,
-      45,    45,    46,    46,    46,    47,    48,    48,    49,    49,
-      50,    50,    51,    52,    52,    53,    53,    54,    54,    54,
-      54,    54,    54,    54,    54,    55,    55,    56,    56,    57,
-      58,    58,    59,    60,    61,    62,    63,    63,    64,    64,
-      65,    65,    65,    65,    65,    65,    66,    66,    67,    67,
-      68,    68,    69,    69,    69,    69,    70,    70,    70,    70,
-      70,    70,    70,    71,    72,    72,    73,    73
+      45,    45,    46,    46,    46,    48,    49,    47,    50,    50,
+      51,    51,    52,    52,    54,    53,    55,    55,    56,    56,
+      57,    57,    57,    57,    57,    57,    57,    57,    58,    58,
+      59,    59,    60,    61,    61,    62,    63,    64,    65,    66,
+      66,    67,    67,    68,    68,    68,    68,    68,    68,    69,
+      69,    70,    70,    71,    71,    72,    72,    72,    72,    73,
+      73,    73,    73,    73,    73,    73,    74,    75,    75,    76,
+      76
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
        0,     2,     1,     1,     2,     1,     1,     3,     1,     4,
-       3,     6,     1,     1,     1,     6,     1,     1,     1,     3,
-       2,     4,     4,     0,     2,     0,     2,     1,     1,     1,
-       1,     1,     1,     1,     1,     2,     1,     4,     6,     4,
-       2,     3,     3,     3,     4,     1,     1,     4,     1,     3,
-       1,     1,     1,     1,     1,     1,     1,     3,     1,     1,
-       1,     3,     1,     1,     1,     1,     3,     1,     1,     1,
-       1,     1,     2,     4,     1,     0,     1,     3
+       3,     6,     1,     1,     1,     0,     0,     8,     1,     1,
+       1,     3,     2,     4,     0,     5,     0,     2,     0,     2,
+       1,     1,     1,     1,     1,     1,     1,     1,     2,     1,
+       4,     6,     4,     2,     3,     3,     3,     4,     1,     1,
+       4,     1,     3,     1,     1,     1,     1,     1,     1,     1,
+       3,     1,     1,     1,     3,     1,     1,     1,     1,     3,
+       1,     1,     1,     1,     1,     2,     4,     1,     0,     1,
+       3
 };
 
 
@@ -1382,294 +1396,431 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 62 "lab6.y" /* yacc.c:1652  */
+#line 76 "lab7.y" /* yacc.c:1652  */
     { 
                         myprogram = (yyvsp[0].node); /*store the final tree in myprogram so that we have a handle to it for printing*/
                     }
-#line 1390 "y.tab.c" /* yacc.c:1652  */
+#line 1404 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 3:
-#line 69 "lab6.y" /* yacc.c:1652  */
+#line 83 "lab7.y" /* yacc.c:1652  */
     {  
                         (yyval.node) = (yyvsp[0].node); /*pass all declarations and their associated nodes to DECLIST*/
                     }
-#line 1398 "y.tab.c" /* yacc.c:1652  */
+#line 1412 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 4:
-#line 73 "lab6.y" /* yacc.c:1652  */
+#line 87 "lab7.y" /* yacc.c:1652  */
     {   
                         (yyvsp[-1].node)->next = (yyvsp[0].node); /*next is used to connect sentences - it is used here to connect the different declarations in the tree*/
                         (yyval.node) = (yyvsp[-1].node); /*pass the reference to the nodes that have been built up to DECLIST*/
                     }
-#line 1407 "y.tab.c" /* yacc.c:1652  */
+#line 1421 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 5:
-#line 82 "lab6.y" /* yacc.c:1652  */
+#line 96 "lab7.y" /* yacc.c:1652  */
     { 
                         (yyval.node) = (yyvsp[0].node); /*pass the reference to the vardec nodes that have been built up to DECLARATION*/
                     }
-#line 1415 "y.tab.c" /* yacc.c:1652  */
+#line 1429 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 6:
-#line 86 "lab6.y" /* yacc.c:1652  */
-    { 
+#line 100 "lab7.y" /* yacc.c:1652  */
+    {
                         (yyval.node) = (yyvsp[0].node); /*pass the reference to the fundec nodes that have been built up to DECLARATION*/
                     }
-#line 1423 "y.tab.c" /* yacc.c:1652  */
+#line 1437 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 7:
-#line 94 "lab6.y" /* yacc.c:1652  */
+#line 108 "lab7.y" /* yacc.c:1652  */
     {  
-                        (yyvsp[-1].node)->mytype = Cur_Type; 
                         (yyval.node) = (yyvsp[-1].node); /*the VARDEC nodes that are created will be stored in VAR_LIST, so pass that reference up to VAR_DEC*/
+                        ASTnode *p = (yyvsp[-1].node);
+                        while( p != NULL )
+                        {
+                            p->mytype = (yyvsp[-2].type);
+                            p->symbol->Type = (yyvsp[-2].type);
+                            p = p->s1;
+                        }
                     }
-#line 1432 "y.tab.c" /* yacc.c:1652  */
+#line 1452 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 8:
-#line 105 "lab6.y" /* yacc.c:1652  */
+#line 125 "lab7.y" /* yacc.c:1652  */
     {
                         (yyval.node) = ASTCreateNode( VARDEC ); 
                         (yyval.node)->name = (yyvsp[0].string); 
-                        (yyval.node)->mytype = Cur_Type; 
+                        struct SymbTab *p;
+                        
+                        if( (p = Search( (yyvsp[0].string), level, 0 )) != NULL )
+                        {
+                            fprintf( stderr, "Error: variable %s has already been defined on level %d\n", (yyvsp[0].string), level );
+                            exit(0);
+                        }
+
+                        else
+                        {
+                            (yyval.node)->symbol = Insert( (yyvsp[0].string), offset, level, 1, TYPE_SCALAR, NULL );
+                            offset++;
+                            
+                            if( debugsw )
+                                Display();
+                        }
                     }
-#line 1442 "y.tab.c" /* yacc.c:1652  */
+#line 1477 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 9:
-#line 111 "lab6.y" /* yacc.c:1652  */
+#line 146 "lab7.y" /* yacc.c:1652  */
     {
                         (yyval.node) = ASTCreateNode( VARDEC );
                         (yyval.node)->name = (yyvsp[-3].string); 
                         (yyval.node)->value = (yyvsp[-1].number); 
-                        (yyval.node)->mytype = Cur_Type;
+                        struct SymbTab *p;
+                        
+                        if( (p = Search( (yyvsp[-3].string), level, 0 )) != NULL )
+                        {
+                            fprintf( stderr, "Error: variable %s has already been defined on level %d\n", (yyvsp[-3].string), level );
+                            exit(0);
+                        }
+
+                        else
+                        {
+                            (yyval.node)->symbol = Insert( (yyvsp[-3].string), offset, level, (yyvsp[-1].number), TYPE_ARRAY, NULL );
+                            offset+=(yyvsp[-1].number);
+                            
+                            if( debugsw )
+                                Display();
+                        }
                     }
-#line 1453 "y.tab.c" /* yacc.c:1652  */
+#line 1503 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 10:
-#line 118 "lab6.y" /* yacc.c:1652  */
+#line 168 "lab7.y" /* yacc.c:1652  */
     {
                         (yyval.node) = ASTCreateNode( VARDEC ); 
-                        (yyval.node)->name = (yyvsp[-2].string);
-                        (yyvsp[0].node)->mytype = Cur_Type;  
+                        (yyval.node)->name = (yyvsp[-2].string); 
                         (yyval.node)->s1 = (yyvsp[0].node);
+                        struct SymbTab *p;
+                        
+                        if( (p = Search( (yyvsp[-2].string), level, 0 )) != NULL )
+                        {
+                            fprintf( stderr, "Error: variable %s has already been defined on level %d\n", (yyvsp[-2].string), level );
+                            exit(0);
+                        }
+
+                        else
+                        {
+                            (yyval.node)->symbol = Insert( (yyvsp[-2].string), offset, level, 1, TYPE_SCALAR, NULL );
+                            offset++;
+                            
+                            if( debugsw )
+                                Display();
+                        }
                     }
-#line 1464 "y.tab.c" /* yacc.c:1652  */
+#line 1529 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 11:
-#line 125 "lab6.y" /* yacc.c:1652  */
+#line 190 "lab7.y" /* yacc.c:1652  */
     {
                         (yyval.node) = ASTCreateNode( VARDEC ); 
                         (yyval.node)->name = (yyvsp[-5].string); 
                         (yyval.node)->value = (yyvsp[-3].number); 
-                        (yyvsp[0].node)->mytype = Cur_Type; 
                         (yyval.node)->s1 = (yyvsp[0].node); 
+                        struct SymbTab *p;
+                        
+                        if( ( p = Search( (yyvsp[-5].string), level, 0 )) != NULL )
+                        {
+                            fprintf( stderr, "Error: variable %s has already been defined on level %d\n", (yyvsp[-5].string), level );
+                            exit(0);
+                        }
+
+                        else
+                        {
+                            (yyval.node)->symbol = Insert( (yyvsp[-5].string), offset, level, (yyvsp[-3].number), TYPE_ARRAY, NULL );
+                            offset+=(yyvsp[-3].number);
+                            
+                            
+                            if( debugsw )
+                                Display();
+                        }
                     }
-#line 1476 "y.tab.c" /* yacc.c:1652  */
+#line 1557 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 12:
-#line 137 "lab6.y" /* yacc.c:1652  */
-    { Cur_Type = INTTYPE; }
-#line 1482 "y.tab.c" /* yacc.c:1652  */
+#line 218 "lab7.y" /* yacc.c:1652  */
+    { (yyval.type) = INTTYPE; }
+#line 1563 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 13:
-#line 138 "lab6.y" /* yacc.c:1652  */
-    { Cur_Type = VOIDTYPE; }
-#line 1488 "y.tab.c" /* yacc.c:1652  */
+#line 219 "lab7.y" /* yacc.c:1652  */
+    { (yyval.type) = VOIDTYPE; }
+#line 1569 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 14:
-#line 139 "lab6.y" /* yacc.c:1652  */
-    { Cur_Type = BOOLTYPE; }
-#line 1494 "y.tab.c" /* yacc.c:1652  */
+#line 220 "lab7.y" /* yacc.c:1652  */
+    { (yyval.type) = BOOLTYPE; }
+#line 1575 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 15:
-#line 146 "lab6.y" /* yacc.c:1652  */
-    {
-                        (yyval.node) = ASTCreateNode( FUNDEC );
-                        (yyval.node)->name = (yyvsp[-4].string);
-                        (yyval.node)->mytype = Cur_Type;
-                        (yyval.node)->s1 = (yyvsp[-2].node);
-                        (yyval.node)->s2= (yyvsp[0].node);
+#line 227 "lab7.y" /* yacc.c:1652  */
+    { 
+                        struct SymbTab *p;
+                        if( (p = Search( (yyvsp[-1].string), level, 0 )) == NULL )
+                            Insert((yyvsp[-1].string), 0, level, 0, TYPE_FUNCTION, NULL);
+                            
+                        goffset = offset;
+                        offset= 2; 
                     }
-#line 1506 "y.tab.c" /* yacc.c:1652  */
+#line 1588 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 16:
-#line 159 "lab6.y" /* yacc.c:1652  */
+#line 237 "lab7.y" /* yacc.c:1652  */
+    {
+                        (Search( (yyvsp[-3].string), level, 0 ))->fparms = (yyvsp[0].node);
+                    }
+#line 1596 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 17:
+#line 242 "lab7.y" /* yacc.c:1652  */
+    {
+                        (yyval.node) = ASTCreateNode( FUNDEC );
+                        (yyval.node)->symbol = Search( (yyvsp[-6].string), 0, 0 );
+                        (yyval.node)->name = (yyvsp[-6].string);
+                        (yyval.node)->mytype = (yyvsp[-7].type);
+                        (yyval.node)->s1 = (yyvsp[-3].node);
+                        (yyval.node)->s2= (yyvsp[0].node);
+                            
+                        (yyval.node)->symbol->mysize = maxoffset;
+                        (yyval.node)->value = maxoffset;
+
+                        offset-=Delete(1);  /* remove all the symbols from what we put in from the function call*/
+                        level=0;  /* reset the level */
+                        offset=goffset;
+                    }
+#line 1616 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 18:
+#line 263 "lab7.y" /* yacc.c:1652  */
     {
                         (yyval.node) = ASTCreateNode( PARAM );
                         (yyval.node)->mytype = VOIDTYPE;
                     }
-#line 1515 "y.tab.c" /* yacc.c:1652  */
-    break;
-
-  case 17:
-#line 163 "lab6.y" /* yacc.c:1652  */
-    { (yyval.node) = (yyvsp[0].node); }
-#line 1521 "y.tab.c" /* yacc.c:1652  */
-    break;
-
-  case 18:
-#line 169 "lab6.y" /* yacc.c:1652  */
-    { (yyval.node) = (yyvsp[0].node); }
-#line 1527 "y.tab.c" /* yacc.c:1652  */
+#line 1625 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 19:
-#line 170 "lab6.y" /* yacc.c:1652  */
-    { (yyval.node) = (yyvsp[-2].node); (yyval.node)->next = (yyvsp[0].node); }
-#line 1533 "y.tab.c" /* yacc.c:1652  */
+#line 268 "lab7.y" /* yacc.c:1652  */
+    { 
+                        (yyval.node) = (yyvsp[0].node); 
+                    }
+#line 1633 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 20:
-#line 177 "lab6.y" /* yacc.c:1652  */
-    {
-                        (yyval.node) = ASTCreateNode( PARAM );
-                        (yyval.node)->mytype = Cur_Type;
-                        (yyval.node)->name = (yyvsp[0].string);
+#line 277 "lab7.y" /* yacc.c:1652  */
+    { 
+                        (yyval.node) = (yyvsp[0].node); 
                     }
-#line 1543 "y.tab.c" /* yacc.c:1652  */
+#line 1641 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 21:
-#line 183 "lab6.y" /* yacc.c:1652  */
-    {
-                        (yyval.node) = ASTCreateNode( PARAM );
-                        (yyval.node)->mytype = Cur_Type;
-                        (yyval.node)->name = (yyvsp[-2].string);
-                        (yyval.node)->value = 1; //just choose some value that isn't 0 to differentiate the type of declaration in the print routine
+#line 281 "lab7.y" /* yacc.c:1652  */
+    { 
+                        (yyval.node) = (yyvsp[-2].node); 
+                        (yyval.node)->next = (yyvsp[0].node); 
                     }
-#line 1554 "y.tab.c" /* yacc.c:1652  */
+#line 1650 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 22:
-#line 195 "lab6.y" /* yacc.c:1652  */
+#line 290 "lab7.y" /* yacc.c:1652  */
     {
-                        (yyval.node) = ASTCreateNode( BLOCK );
-                        (yyval.node)->s1 = (yyvsp[-2].node); //connect local decs to the block
-                        (yyval.node)->s2 = (yyvsp[-1].node); //connect statements to the block
+                        (yyval.node) = ASTCreateNode( PARAM );
+                        struct SymbTab *p;
+                        
+                        if( (p = Search( (yyvsp[0].string), level + 1, 0 )) == NULL )
+                            (yyval.node)->symbol = Insert( (yyvsp[0].string), offset, level + 1, 1, TYPE_SCALAR, NULL );
+                            
+                        else
+                        {
+                            yyerror( "MULTIPLE IDENTICAL PARAMETERS" );
+                            exit( 1 );
+                        }
+                            
+                        offset++;
+                        (yyval.node)->mytype = (yyvsp[-1].type);
+                        (yyval.node)->name = (yyvsp[0].string);
                     }
-#line 1564 "y.tab.c" /* yacc.c:1652  */
+#line 1672 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 23:
-#line 205 "lab6.y" /* yacc.c:1652  */
-    { (yyval.node) = NULL; }
-#line 1570 "y.tab.c" /* yacc.c:1652  */
+#line 308 "lab7.y" /* yacc.c:1652  */
+    {
+                        (yyval.node) = ASTCreateNode( PARAM );
+                        struct SymbTab *p;
+                        
+                        if( (p = Search( (yyvsp[-2].string), level + 1, 0 )) == NULL )
+                            (yyval.node)->symbol = Insert( (yyvsp[-2].string), offset, level + 1, 1, TYPE_ARRAY, NULL );
+                            
+                        else
+                        {
+                            yyerror( "MULTIPLE IDENTICAL PARAMETERS" );
+                            exit( 1 );
+                        }
+                            
+                        offset++;
+                        (yyval.node)->mytype = (yyvsp[-3].type);
+                        (yyval.node)->name = (yyvsp[-2].string);
+                        (yyval.node)->value = 1; //just choose some value that isn't 0 to differentiate the type of declaration in the print routine
+                    }
+#line 1695 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 24:
-#line 207 "lab6.y" /* yacc.c:1652  */
+#line 332 "lab7.y" /* yacc.c:1652  */
+    { level++; }
+#line 1701 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 25:
+#line 334 "lab7.y" /* yacc.c:1652  */
+    {
+                        Display();
+                        (yyval.node) = ASTCreateNode( BLOCK );
+                        (yyval.node)->s1 = (yyvsp[-2].node); //connect local decs to the block
+                        (yyval.node)->s2 = (yyvsp[-1].node); //connect statements to the block
+                        maxoffset = max( maxoffset, offset );
+                        offset -= Delete( level );
+                        level--;
+                    }
+#line 1715 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 26:
+#line 348 "lab7.y" /* yacc.c:1652  */
+    { (yyval.node) = NULL; }
+#line 1721 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 27:
+#line 350 "lab7.y" /* yacc.c:1652  */
     {
                         (yyval.node) = (yyvsp[-1].node);
                         (yyval.node)->next = (yyvsp[0].node);  //connect multiple declarations together
                     }
-#line 1579 "y.tab.c" /* yacc.c:1652  */
+#line 1730 "y.tab.c" /* yacc.c:1652  */
     break;
 
-  case 25:
-#line 216 "lab6.y" /* yacc.c:1652  */
+  case 28:
+#line 359 "lab7.y" /* yacc.c:1652  */
     { (yyval.node) = NULL; }
-#line 1585 "y.tab.c" /* yacc.c:1652  */
+#line 1736 "y.tab.c" /* yacc.c:1652  */
     break;
 
-  case 26:
-#line 218 "lab6.y" /* yacc.c:1652  */
+  case 29:
+#line 361 "lab7.y" /* yacc.c:1652  */
     {
                         (yyval.node) = (yyvsp[-1].node);
                         (yyval.node)->next = (yyvsp[0].node); //connect multiple statements together
                     }
-#line 1594 "y.tab.c" /* yacc.c:1652  */
-    break;
-
-  case 27:
-#line 227 "lab6.y" /* yacc.c:1652  */
-    { (yyval.node) = (yyvsp[0].node); }
-#line 1600 "y.tab.c" /* yacc.c:1652  */
-    break;
-
-  case 28:
-#line 228 "lab6.y" /* yacc.c:1652  */
-    { (yyval.node) = (yyvsp[0].node); }
-#line 1606 "y.tab.c" /* yacc.c:1652  */
-    break;
-
-  case 29:
-#line 229 "lab6.y" /* yacc.c:1652  */
-    { (yyval.node) = (yyvsp[0].node); }
-#line 1612 "y.tab.c" /* yacc.c:1652  */
+#line 1745 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 30:
-#line 230 "lab6.y" /* yacc.c:1652  */
+#line 370 "lab7.y" /* yacc.c:1652  */
     { (yyval.node) = (yyvsp[0].node); }
-#line 1618 "y.tab.c" /* yacc.c:1652  */
+#line 1751 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 31:
-#line 231 "lab6.y" /* yacc.c:1652  */
+#line 371 "lab7.y" /* yacc.c:1652  */
     { (yyval.node) = (yyvsp[0].node); }
-#line 1624 "y.tab.c" /* yacc.c:1652  */
+#line 1757 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 32:
-#line 232 "lab6.y" /* yacc.c:1652  */
+#line 372 "lab7.y" /* yacc.c:1652  */
     { (yyval.node) = (yyvsp[0].node); }
-#line 1630 "y.tab.c" /* yacc.c:1652  */
+#line 1763 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 33:
-#line 233 "lab6.y" /* yacc.c:1652  */
+#line 373 "lab7.y" /* yacc.c:1652  */
     { (yyval.node) = (yyvsp[0].node); }
-#line 1636 "y.tab.c" /* yacc.c:1652  */
+#line 1769 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 34:
-#line 234 "lab6.y" /* yacc.c:1652  */
+#line 374 "lab7.y" /* yacc.c:1652  */
     { (yyval.node) = (yyvsp[0].node); }
-#line 1642 "y.tab.c" /* yacc.c:1652  */
+#line 1775 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 35:
-#line 240 "lab6.y" /* yacc.c:1652  */
+#line 375 "lab7.y" /* yacc.c:1652  */
+    { (yyval.node) = (yyvsp[0].node); }
+#line 1781 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 36:
+#line 376 "lab7.y" /* yacc.c:1652  */
+    { (yyval.node) = (yyvsp[0].node); }
+#line 1787 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 37:
+#line 377 "lab7.y" /* yacc.c:1652  */
+    { (yyval.node) = (yyvsp[0].node); }
+#line 1793 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 38:
+#line 383 "lab7.y" /* yacc.c:1652  */
     { 
                         (yyval.node) = ASTCreateNode( EXPRESSSTMT ); //create am expression statement node
                         (yyval.node)->s1 = (yyvsp[-1].node); //reference the expression using s1
                     }
-#line 1651 "y.tab.c" /* yacc.c:1652  */
+#line 1802 "y.tab.c" /* yacc.c:1652  */
     break;
 
-  case 36:
-#line 245 "lab6.y" /* yacc.c:1652  */
+  case 39:
+#line 388 "lab7.y" /* yacc.c:1652  */
     { 
                         (yyval.node) = ASTCreateNode( EXPRESSSTMT ); //create an expression statement node
                     }
-#line 1659 "y.tab.c" /* yacc.c:1652  */
+#line 1810 "y.tab.c" /* yacc.c:1652  */
     break;
 
-  case 37:
-#line 252 "lab6.y" /* yacc.c:1652  */
+  case 40:
+#line 395 "lab7.y" /* yacc.c:1652  */
     {
                         (yyval.node) = ASTCreateNode( IFTHEN );
                         (yyval.node)->s1 = (yyvsp[-2].node); //reference the expression
                         (yyval.node)->s2 = (yyvsp[0].node); //reference the statement
                     }
-#line 1669 "y.tab.c" /* yacc.c:1652  */
+#line 1820 "y.tab.c" /* yacc.c:1652  */
     break;
 
-  case 38:
-#line 258 "lab6.y" /* yacc.c:1652  */
+  case 41:
+#line 401 "lab7.y" /* yacc.c:1652  */
     {
                         (yyval.node) = ASTCreateNode( IFTHEN );
                         (yyval.node)->s1 = (yyvsp[-4].node); //reference the expression
@@ -1677,315 +1828,452 @@ yyreduce:
                         (yyval.node)->s2->s1 = (yyvsp[-2].node); //connect the first statement to the else node using s1
                         (yyval.node)->s2->s2 = (yyvsp[0].node); //connect the second statement to the else node using s2
                     }
-#line 1681 "y.tab.c" /* yacc.c:1652  */
+#line 1832 "y.tab.c" /* yacc.c:1652  */
     break;
 
-  case 39:
-#line 271 "lab6.y" /* yacc.c:1652  */
+  case 42:
+#line 414 "lab7.y" /* yacc.c:1652  */
     {
                         (yyval.node) = ASTCreateNode( WHILEST );
                         (yyval.node)->s1 = (yyvsp[-2].node); //connect expressions to the while node
                         (yyval.node)->s2 = (yyvsp[0].node); //connect statements to the while node
                     }
-#line 1691 "y.tab.c" /* yacc.c:1652  */
+#line 1842 "y.tab.c" /* yacc.c:1652  */
     break;
 
-  case 40:
-#line 280 "lab6.y" /* yacc.c:1652  */
+  case 43:
+#line 423 "lab7.y" /* yacc.c:1652  */
     {
                         (yyval.node) = ASTCreateNode( RET ); //simply create a return node without assigning any other values
                     }
-#line 1699 "y.tab.c" /* yacc.c:1652  */
+#line 1850 "y.tab.c" /* yacc.c:1652  */
     break;
 
-  case 41:
-#line 284 "lab6.y" /* yacc.c:1652  */
+  case 44:
+#line 427 "lab7.y" /* yacc.c:1652  */
     {
                         (yyval.node) = ASTCreateNode( RET );
                         (yyval.node)->s1 = (yyvsp[-1].node); //connect the expression that is associated with the return statement using s1
                     }
-#line 1708 "y.tab.c" /* yacc.c:1652  */
+#line 1859 "y.tab.c" /* yacc.c:1652  */
     break;
 
-  case 42:
-#line 292 "lab6.y" /* yacc.c:1652  */
+  case 45:
+#line 435 "lab7.y" /* yacc.c:1652  */
     {
                         (yyval.node) = ASTCreateNode( READST ); 
                         (yyval.node)->s1 = (yyvsp[-1].node); //connect the variable to the read statement using s1
                     }
-#line 1717 "y.tab.c" /* yacc.c:1652  */
+#line 1868 "y.tab.c" /* yacc.c:1652  */
     break;
 
-  case 43:
-#line 300 "lab6.y" /* yacc.c:1652  */
+  case 46:
+#line 443 "lab7.y" /* yacc.c:1652  */
     {
                         (yyval.node) = ASTCreateNode( WRITEST );
                         (yyval.node)->s1 = (yyvsp[-1].node); //connect the expression to the write statement using s1
                     }
-#line 1726 "y.tab.c" /* yacc.c:1652  */
-    break;
-
-  case 44:
-#line 308 "lab6.y" /* yacc.c:1652  */
-    {
-                        (yyval.node) = ASTCreateNode( ASSIGNST );
-                        (yyval.node)->s1 = (yyvsp[-3].node); //connect the variable part of assignment using s1
-                        (yyval.node)->s2 = (yyvsp[-1].node); //connect the expression part of the assignment using s2
-                    }
-#line 1736 "y.tab.c" /* yacc.c:1652  */
-    break;
-
-  case 45:
-#line 316 "lab6.y" /* yacc.c:1652  */
-    { (yyval.node) = (yyvsp[0].node); }
-#line 1742 "y.tab.c" /* yacc.c:1652  */
-    break;
-
-  case 46:
-#line 321 "lab6.y" /* yacc.c:1652  */
-    {
-                        (yyval.node) = ASTCreateNode( IDENT ); 
-                        (yyval.node)->name = (yyvsp[0].string);
-                    }
-#line 1751 "y.tab.c" /* yacc.c:1652  */
+#line 1877 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 47:
-#line 326 "lab6.y" /* yacc.c:1652  */
+#line 451 "lab7.y" /* yacc.c:1652  */
     {
-                        (yyval.node) = ASTCreateNode( IDENT );
-                        (yyval.node)->name = (yyvsp[-3].string);
-                        (yyval.node)->value = 1; //set to a non-zero value for printing purposes
-                        (yyval.node)->s1 = (yyvsp[-1].node);
-                    }
-#line 1762 "y.tab.c" /* yacc.c:1652  */
-    break;
-
-  case 48:
-#line 335 "lab6.y" /* yacc.c:1652  */
-    { (yyval.node) = (yyvsp[0].node); }
-#line 1768 "y.tab.c" /* yacc.c:1652  */
-    break;
-
-  case 49:
-#line 337 "lab6.y" /* yacc.c:1652  */
-    {
-                        (yyval.node) = ASTCreateNode( EXPRESS );
-                        (yyval.node)->operator = (yyvsp[-1].operator); //set the operator associated with the expression
-                        (yyval.node)->s1 = (yyvsp[-2].node); //connect the left operand using s1
-                        (yyval.node)->s2 = (yyvsp[0].node); //connect the right operand using s2
-                    }
-#line 1779 "y.tab.c" /* yacc.c:1652  */
-    break;
-
-  case 50:
-#line 347 "lab6.y" /* yacc.c:1652  */
-    { (yyval.operator) = LTEQ; }
-#line 1785 "y.tab.c" /* yacc.c:1652  */
-    break;
-
-  case 51:
-#line 348 "lab6.y" /* yacc.c:1652  */
-    { (yyval.operator) = LT; }
-#line 1791 "y.tab.c" /* yacc.c:1652  */
-    break;
-
-  case 52:
-#line 349 "lab6.y" /* yacc.c:1652  */
-    { (yyval.operator) = GT; }
-#line 1797 "y.tab.c" /* yacc.c:1652  */
-    break;
-
-  case 53:
-#line 350 "lab6.y" /* yacc.c:1652  */
-    { (yyval.operator) = GTEQ; }
-#line 1803 "y.tab.c" /* yacc.c:1652  */
-    break;
-
-  case 54:
-#line 351 "lab6.y" /* yacc.c:1652  */
-    { (yyval.operator) = EQ; }
-#line 1809 "y.tab.c" /* yacc.c:1652  */
-    break;
-
-  case 55:
-#line 352 "lab6.y" /* yacc.c:1652  */
-    { (yyval.operator) = NEQ; }
-#line 1815 "y.tab.c" /* yacc.c:1652  */
-    break;
-
-  case 56:
-#line 356 "lab6.y" /* yacc.c:1652  */
-    { (yyval.node) = (yyvsp[0].node); }
-#line 1821 "y.tab.c" /* yacc.c:1652  */
-    break;
-
-  case 57:
-#line 358 "lab6.y" /* yacc.c:1652  */
-    {
-                        (yyval.node) = ASTCreateNode( EXPRESS );
-                        (yyval.node)->operator = (yyvsp[-1].operator); //set the addition operator associated with the expression
-                        (yyval.node)->s1 = (yyvsp[-2].node); //connect the left operand using s1
-                        (yyval.node)->s2 = (yyvsp[0].node); //connect the right operand using s2
-                    }
-#line 1832 "y.tab.c" /* yacc.c:1652  */
-    break;
-
-  case 58:
-#line 368 "lab6.y" /* yacc.c:1652  */
-    { (yyval.operator) = PLUS; }
-#line 1838 "y.tab.c" /* yacc.c:1652  */
-    break;
-
-  case 59:
-#line 369 "lab6.y" /* yacc.c:1652  */
-    { (yyval.operator) = MINUS; }
-#line 1844 "y.tab.c" /* yacc.c:1652  */
-    break;
-
-  case 60:
-#line 373 "lab6.y" /* yacc.c:1652  */
-    { (yyval.node) = (yyvsp[0].node); }
-#line 1850 "y.tab.c" /* yacc.c:1652  */
-    break;
-
-  case 61:
-#line 375 "lab6.y" /* yacc.c:1652  */
-    {
-                        (yyval.node) = ASTCreateNode( EXPRESS ); //for ease of implementation simply declare this sentence to be an expression - there's no use in differentating the types
-                        (yyval.node)->operator = (yyvsp[-1].operator); //store the operator
-                        (yyval.node)->s1 = (yyvsp[-2].node); //s1 points to the left operand
-                        (yyval.node)->s2 = (yyvsp[0].node); //s2 points to the right operand
-                    }
-#line 1861 "y.tab.c" /* yacc.c:1652  */
-    break;
-
-  case 62:
-#line 385 "lab6.y" /* yacc.c:1652  */
-    { (yyval.operator) = MULTIPLY; }
-#line 1867 "y.tab.c" /* yacc.c:1652  */
-    break;
-
-  case 63:
-#line 386 "lab6.y" /* yacc.c:1652  */
-    { (yyval.operator) = DIVIDE; }
-#line 1873 "y.tab.c" /* yacc.c:1652  */
-    break;
-
-  case 64:
-#line 387 "lab6.y" /* yacc.c:1652  */
-    { (yyval.operator) = ANDOP; }
-#line 1879 "y.tab.c" /* yacc.c:1652  */
-    break;
-
-  case 65:
-#line 388 "lab6.y" /* yacc.c:1652  */
-    { (yyval.operator) = OROP; }
-#line 1885 "y.tab.c" /* yacc.c:1652  */
-    break;
-
-  case 66:
-#line 393 "lab6.y" /* yacc.c:1652  */
-    {
-                        (yyval.node) = (yyvsp[-1].node); //pass the reference to the expression to factor
-                    }
-#line 1893 "y.tab.c" /* yacc.c:1652  */
-    break;
-
-  case 67:
-#line 397 "lab6.y" /* yacc.c:1652  */
-    { 
-                        (yyval.node) = ASTCreateNode( NUM ); //create a new node
-                        (yyval.node)->value = (yyvsp[0].number); //assign the nodes value to be the number
+                        if( (yyvsp[-3].node)->mytype == (yyvsp[-1].node)->mytype )
+                        {
+                            (yyval.node) = ASTCreateNode( ASSIGNST );
+                            (yyval.node)->s1 = (yyvsp[-3].node); //connect the variable part of assignment using s1
+                            (yyval.node)->s2 = (yyvsp[-1].node); //connect the expression part of the assignment using s2
+                            
+                            if( Search( (yyval.node)->s1->name, level, 1 ) == NULL )
+                            {
+                                yyerror( "ERROR: VARIABLE DOES NOT EXIST" );
+                                exit( 1 );
+                            }
+                        }
+                        
+                        else
+                        {
+                            yyerror( "INCOMPATIBLE TYPES" );
+                            exit( 1 );
+                        }
                     }
 #line 1902 "y.tab.c" /* yacc.c:1652  */
     break;
 
-  case 68:
-#line 401 "lab6.y" /* yacc.c:1652  */
+  case 48:
+#line 474 "lab7.y" /* yacc.c:1652  */
     { (yyval.node) = (yyvsp[0].node); }
 #line 1908 "y.tab.c" /* yacc.c:1652  */
     break;
 
-  case 69:
-#line 402 "lab6.y" /* yacc.c:1652  */
+  case 49:
+#line 479 "lab7.y" /* yacc.c:1652  */
+    {
+                        struct SymbTab *p;
+                        
+                        //if this variable exists at this level or below
+                        if( (p=Search( (yyvsp[0].string), level, 1 )) != NULL )
+                        {
+                            (yyval.node) = ASTCreateNode( IDENT );
+                            (yyval.node)->name = (yyvsp[0].string);
+                            
+                            if( p->IsAFunc == 0 )
+                                (yyval.node)->symbol = p;
+                                
+                            else
+                            {
+                                yyerror( "ERROR: TYPE MISMATCH, RIGHT HAND SIDE NOT A SCALAR" );
+                                exit( 1 );
+                            }
+                        }
+                        
+                        else
+                        {
+                            yyerror( "ERROR: VARIABLE HAS NOT BEEN DECLARED" );
+                            exit( 1 );
+                        }
+                    }
+#line 1938 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 50:
+#line 505 "lab7.y" /* yacc.c:1652  */
+    {
+                        struct SymbTab *p;
+                        
+                        //if the variable exists at this level or at any level below
+                        if( (p = Search( (yyvsp[-3].string), level, 1)) != NULL )
+                        {
+                            (yyval.node) = ASTCreateNode( IDENT );
+                            (yyval.node)->name = (yyvsp[-3].string);
+                            (yyval.node)->value = 1; //set to a non-zero value for printing purposes
+                            (yyval.node)->s1 = (yyvsp[-1].node);
+                            
+                            if( p->IsAFunc == 1 )
+                                (yyval.node)->symbol = p;
+                                
+                            else
+                            {
+                                yyerror( "ERROR: TYPE MISMATCH, RIGHT HAND SIDE NOT AN ARRAY" );
+                                exit( 1 );
+                            }
+                        }
+                        
+                        else
+                        {
+                            yyerror( "ERROR: UNDECLARED VARIABLE" );
+                            exit( 1 );
+                        }
+
+                    }
+#line 1971 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 51:
+#line 536 "lab7.y" /* yacc.c:1652  */
     { (yyval.node) = (yyvsp[0].node); }
-#line 1914 "y.tab.c" /* yacc.c:1652  */
+#line 1977 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 52:
+#line 538 "lab7.y" /* yacc.c:1652  */
+    {
+                        if( (yyvsp[-2].node)->mytype == (yyvsp[0].node)->mytype )
+                        {
+                            (yyval.node) = ASTCreateNode( EXPRESS );
+                            (yyval.node)->mytype == (yyvsp[-2].node)->mytype;
+                            (yyval.node)->name = CreateTemp();
+                            (yyval.node)->symbol = Insert( (yyval.node)->name, offset, level, 1, TYPE_SCALAR, NULL );
+                            offset++;
+                            
+                            if( debugsw )
+                                    Display();
+                                    
+                            (yyval.node)->operator = (yyvsp[-1].operator); //set the operator associated with the expression
+                            (yyval.node)->s1 = (yyvsp[-2].node); //connect the left operand using s1
+                            (yyval.node)->s2 = (yyvsp[0].node); //connect the right operand using s2
+                        }
+                        
+                        else
+                        {
+                            yyerror( "INCOMPATIBLE TYPES" );
+                            exit( 1 );
+                        }
+                    }
+#line 2005 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 53:
+#line 565 "lab7.y" /* yacc.c:1652  */
+    { (yyval.operator) = LTEQ; }
+#line 2011 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 54:
+#line 566 "lab7.y" /* yacc.c:1652  */
+    { (yyval.operator) = LT; }
+#line 2017 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 55:
+#line 567 "lab7.y" /* yacc.c:1652  */
+    { (yyval.operator) = GT; }
+#line 2023 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 56:
+#line 568 "lab7.y" /* yacc.c:1652  */
+    { (yyval.operator) = GTEQ; }
+#line 2029 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 57:
+#line 569 "lab7.y" /* yacc.c:1652  */
+    { (yyval.operator) = EQ; }
+#line 2035 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 58:
+#line 570 "lab7.y" /* yacc.c:1652  */
+    { (yyval.operator) = NEQ; }
+#line 2041 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 59:
+#line 574 "lab7.y" /* yacc.c:1652  */
+    { (yyval.node) = (yyvsp[0].node); }
+#line 2047 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 60:
+#line 576 "lab7.y" /* yacc.c:1652  */
+    {
+                        if( (yyvsp[-2].node)->mytype == (yyvsp[0].node)->mytype )
+                        {
+                            (yyval.node) = ASTCreateNode( EXPRESS );
+                            (yyval.node)->mytype = (yyvsp[-2].node)->mytype;
+                            (yyval.node)->name = CreateTemp();
+                            (yyval.node)->symbol = Insert( (yyval.node)->name, offset, level, 1, TYPE_SCALAR, NULL );
+                            offset++;
+                            
+                            if( debugsw )
+                                    Display();
+                                    
+                            (yyval.node)->operator = (yyvsp[-1].operator); //set the addition operator associated with the expression
+                            (yyval.node)->s1 = (yyvsp[-2].node); //connect the left operand using s1
+                            (yyval.node)->s2 = (yyvsp[0].node); //connect the right operand using s2
+                        }
+                        
+                        else
+                        {
+                            yyerror( "INCOMPATIBLE TYPES" );
+                            exit( 1 );
+                        }
+                    }
+#line 2075 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 61:
+#line 603 "lab7.y" /* yacc.c:1652  */
+    { (yyval.operator) = PLUS; }
+#line 2081 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 62:
+#line 604 "lab7.y" /* yacc.c:1652  */
+    { (yyval.operator) = MINUS; }
+#line 2087 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 63:
+#line 608 "lab7.y" /* yacc.c:1652  */
+    { (yyval.node) = (yyvsp[0].node); }
+#line 2093 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 64:
+#line 610 "lab7.y" /* yacc.c:1652  */
+    {
+                        if( (yyvsp[-2].node)->mytype == (yyvsp[0].node)->mytype )
+                        {
+                            (yyval.node) = ASTCreateNode( EXPRESS ); //for ease of implementation simply declare this sentence to be an expression - there's no use in differentating the types
+                            (yyval.node)->mytype = (yyvsp[-2].node)->mytype;
+                            (yyval.node)->name = CreateTemp();
+                            (yyval.node)->symbol = Insert( (yyval.node)->name, offset, level, 1, TYPE_SCALAR, NULL );
+                            offset++;
+                            
+                            if( debugsw )
+                                    Display();
+                                    
+                            (yyval.node)->operator = (yyvsp[-1].operator); //store the operator
+                            (yyval.node)->s1 = (yyvsp[-2].node); //s1 points to the left operand
+                            (yyval.node)->s2 = (yyvsp[0].node); //s2 points to the right operand
+                        }
+                        
+                        else
+                        {
+                            yyerror( "INCOMPATIBLE TYPES" );
+                            exit( 1 );
+                        }
+                    }
+#line 2121 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 65:
+#line 637 "lab7.y" /* yacc.c:1652  */
+    { (yyval.operator) = MULTIPLY; }
+#line 2127 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 66:
+#line 638 "lab7.y" /* yacc.c:1652  */
+    { (yyval.operator) = DIVIDE; }
+#line 2133 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 67:
+#line 639 "lab7.y" /* yacc.c:1652  */
+    { (yyval.operator) = ANDOP; }
+#line 2139 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 68:
+#line 640 "lab7.y" /* yacc.c:1652  */
+    { (yyval.operator) = OROP; }
+#line 2145 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 69:
+#line 645 "lab7.y" /* yacc.c:1652  */
+    {
+                        (yyval.node) = (yyvsp[-1].node); //pass the reference to the expression to factor
+                    }
+#line 2153 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 70:
-#line 404 "lab6.y" /* yacc.c:1652  */
-    {
-                        /*true is equivalent to 1*/
-                        (yyval.node) = ASTCreateNode( NUM );
-                        (yyval.node)->value = 1;
+#line 649 "lab7.y" /* yacc.c:1652  */
+    { 
+                        (yyval.node) = ASTCreateNode( NUM ); //create a new node
+                        (yyval.node)->mytype = INTTYPE;
+                        (yyval.node)->value = (yyvsp[0].number); //assign the nodes value to be the number
                     }
-#line 1924 "y.tab.c" /* yacc.c:1652  */
+#line 2163 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 71:
-#line 410 "lab6.y" /* yacc.c:1652  */
-    {
-                        /*false is equivalent to 0*/
-                        (yyval.node) = ASTCreateNode( NUM );
-                        (yyval.node)->value = 0;
-                    }
-#line 1934 "y.tab.c" /* yacc.c:1652  */
+#line 654 "lab7.y" /* yacc.c:1652  */
+    { (yyval.node) = (yyvsp[0].node); }
+#line 2169 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 72:
-#line 416 "lab6.y" /* yacc.c:1652  */
+#line 655 "lab7.y" /* yacc.c:1652  */
+    { (yyval.node) = (yyvsp[0].node); }
+#line 2175 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 73:
+#line 657 "lab7.y" /* yacc.c:1652  */
+    {
+                        /*true is equivalent to 1*/
+                        (yyval.node) = ASTCreateNode( NUM );
+                        (yyval.node)->mytype = BOOLTYPE;
+                        (yyval.node)->value = 1;
+                    }
+#line 2186 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 74:
+#line 664 "lab7.y" /* yacc.c:1652  */
+    {
+                        /*false is equivalent to 0*/
+                        (yyval.node) = ASTCreateNode( NUM );
+                        (yyval.node)->mytype = BOOLTYPE;
+                        (yyval.node)->value = 0;
+                    }
+#line 2197 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 75:
+#line 671 "lab7.y" /* yacc.c:1652  */
     { 
                         (yyval.node) = ASTCreateNode( EXPRESS ); 
                         (yyval.node)->operator = MYNOT; //assign the operator to be NOT
                         (yyval.node)->s1 = (yyvsp[0].node); //have this expression node reference factor through s1
                     }
-#line 1944 "y.tab.c" /* yacc.c:1652  */
-    break;
-
-  case 73:
-#line 425 "lab6.y" /* yacc.c:1652  */
-    {
-                        (yyval.node) = ASTCreateNode( CALLFUNC ); //create a call node
-                        (yyval.node)->name = (yyvsp[-3].string); //set the name
-                        (yyval.node)->s1 = (yyvsp[-1].node); //connect the argument list using s1
-                    }
-#line 1954 "y.tab.c" /* yacc.c:1652  */
-    break;
-
-  case 74:
-#line 433 "lab6.y" /* yacc.c:1652  */
-    { (yyval.node) = (yyvsp[0].node); }
-#line 1960 "y.tab.c" /* yacc.c:1652  */
-    break;
-
-  case 75:
-#line 434 "lab6.y" /* yacc.c:1652  */
-    { (yyval.node) = NULL; }
-#line 1966 "y.tab.c" /* yacc.c:1652  */
+#line 2207 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 76:
-#line 439 "lab6.y" /* yacc.c:1652  */
-    { 
-                        (yyval.node) = ASTCreateNode( ARG ); //create an ARG node
-                        (yyval.node)->s1 = (yyvsp[0].node); //connnect the expression using s1
+#line 680 "lab7.y" /* yacc.c:1652  */
+    {
+                        struct SymbTab *p;
+                        if( (p = Search( (yyvsp[-3].string), 0, 0 )) != NULL )
+                        {
+                            (yyval.node) = ASTCreateNode( CALLFUNC ); //create a call node
+                            (yyval.node)->name = (yyvsp[-3].string); //set the name
+                            (yyval.node)->s1 = (yyvsp[-1].node); //connect the argument list using s1
+                            
+                            if( p->IsAFunc != 2 )
+                            {
+                                yyerror( (yyvsp[-3].string) );
+                                yyerror( "FUNCTION NAME NOT DEFINED" );
+                                exit( 1 );
+                            }
+                            
+                            if( CompareParams( p->fparms, (yyvsp[-1].node) ) != 1 )
+                            {
+                                yyerror( "PARAMETER TYPE OR LENGTH MISMATCH" );
+                                //exit( 1 );
+                            }
+                        }
+                        else
+                        {
+                            yyerror( "CANNOT USE A FUNCTION THAT HASN'T BEEN DECLARED" );
+                            exit( 1 );
+                        }
+                        
                     }
-#line 1975 "y.tab.c" /* yacc.c:1652  */
+#line 2240 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 77:
-#line 444 "lab6.y" /* yacc.c:1652  */
+#line 711 "lab7.y" /* yacc.c:1652  */
+    { (yyval.node) = (yyvsp[0].node); }
+#line 2246 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 78:
+#line 712 "lab7.y" /* yacc.c:1652  */
+    { (yyval.node) = NULL; }
+#line 2252 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 79:
+#line 717 "lab7.y" /* yacc.c:1652  */
     { 
-                        (yyval.node) = ASTCreateNode( ARG ); //create an ARG node
-                        (yyval.node)->s1 = (yyvsp[-2].node); //connnect the expression using s1
-                        (yyval.node)->next = (yyvsp[0].node); //connect multiple arguments using next
+                        (yyval.node) = ASTCreateNode( ARG ); //create an arg node
+                        (yyval.node)->s1 = (yyvsp[0].node); //connect the expression using s1
+                        (yyval.node)->mytype = (yyvsp[0].node)->mytype;
                     }
-#line 1985 "y.tab.c" /* yacc.c:1652  */
+#line 2262 "y.tab.c" /* yacc.c:1652  */
+    break;
+
+  case 80:
+#line 723 "lab7.y" /* yacc.c:1652  */
+    { 
+                        (yyval.node) = ASTCreateNode( ARG ); //create an arg node
+                        (yyval.node)->s1 = (yyvsp[-2].node); //connect the expression using s1
+                        (yyval.node)->next = (yyvsp[0].node); //connect multiple arguments using next 
+                        (yyval.node)->mytype = (yyvsp[-2].node)->mytype;
+                    }
+#line 2273 "y.tab.c" /* yacc.c:1652  */
     break;
 
 
-#line 1989 "y.tab.c" /* yacc.c:1652  */
+#line 2277 "y.tab.c" /* yacc.c:1652  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2216,8 +2504,35 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 452 "lab6.y" /* yacc.c:1918  */
+#line 732 "lab7.y" /* yacc.c:1918  */
 	/* end of rules, start of program */
+
+/*returns the maximum of two digits*/
+int max( int x, int y )
+{
+    if( x >= y )
+        return x;
+    else
+        return y;
+}
+
+int CompareParams( ASTnode *formal, ASTnode *actual )
+{
+    ASTnode *f = formal;
+    ASTnode *a = actual;
+    
+    while( f != NULL && a != NULL )
+    {
+        if( f->mytype != a->mytype )
+            return 0;
+        
+        f = f->next;
+        a = a->next;
+    }
+    
+    return ( f == NULL && a == NULL );
+}
+
 
 int main()
 { 
@@ -2225,7 +2540,8 @@ int main()
     if( yyparse() == 0 )
     {
         printf( "The program is syntactically correct.\n" );
-        ASTprint( 0, myprogram );
+        //ASTprint( 0, myprogram );
+        printf( "Main Symbol Table Start: \n" );
+        Display();
     }
-    
 }

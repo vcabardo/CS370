@@ -66,13 +66,13 @@ extern int yydebug;
     TRUE = 272,
     FALSE = 273,
     NOT = 274,
-    INT = 275,
-    VOID = 276,
-    BOOLEAN = 277,
-    LTE = 278,
-    GTE = 279,
-    E = 280,
-    NE = 281
+    LTE = 275,
+    GTE = 276,
+    E = 277,
+    NE = 278,
+    INT = 279,
+    VOID = 280,
+    BOOLEAN = 281
   };
 #endif
 /* Tokens.  */
@@ -93,27 +93,28 @@ extern int yydebug;
 #define TRUE 272
 #define FALSE 273
 #define NOT 274
-#define INT 275
-#define VOID 276
-#define BOOLEAN 277
-#define LTE 278
-#define GTE 279
-#define E 280
-#define NE 281
+#define LTE 275
+#define GTE 276
+#define E 277
+#define NE 278
+#define INT 279
+#define VOID 280
+#define BOOLEAN 281
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 
 union YYSTYPE
 {
-#line 39 "lab6.y" /* yacc.c:1921  */
+#line 49 "lab7.y" /* yacc.c:1921  */
 
     int number; //treat token as a 32 bit integer
     char *string; //treat token as a 32 bit pointer to a string
     struct ASTnodetype *node; //allow AST nodes to be constructed by the program 
     enum OPERATORS operator;
+    enum SYSTEMTYPES type;
 
-#line 117 "y.tab.h" /* yacc.c:1921  */
+#line 118 "y.tab.h" /* yacc.c:1921  */
 };
 
 typedef union YYSTYPE YYSTYPE;

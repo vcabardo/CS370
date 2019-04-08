@@ -6,4 +6,4 @@ all:
 	yacc -d lab6.y
 	lex lab6.l
 	gcc y.tab.c lex.yy.c ast.c ast.h -o lab6
-	./lab6
+	./lab6 

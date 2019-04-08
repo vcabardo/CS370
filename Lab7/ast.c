@@ -32,6 +32,18 @@ void PT(int howmany)
             printf( "  " );
 }
 
+void printType( enum SYSTEMTYPES type )
+{
+    if( type == INTTYPE )
+        printf( "INT " );
+    
+    if( type == VOIDTYPE )
+        printf( "VOID " );
+    
+    if( type == BOOLTYPE )
+        printf( "BOOLEAN " );
+}
+
 /*  Print out the abstract syntax tree */
 void ASTprint(int level,ASTnode *p)
 {
@@ -46,14 +58,7 @@ void ASTprint(int level,ASTnode *p)
                 printf( "Variable " ); //broadcast that a variable has been found
                 
                 /*print the type of the variable declaration*/
-                if( p->mytype == INTTYPE )
-                    printf( "INT " );
-                
-                if( p->mytype == VOIDTYPE )
-                    printf( "VOID " );
-                
-                if( p->mytype == BOOLTYPE )
-                    printf( "BOOLEAN " );
+                printType( p->mytype );
                 
                 printf( "%s  ", p->name ); //print the name
 
@@ -68,14 +73,7 @@ void ASTprint(int level,ASTnode *p)
         /*when printing a function print the type, the name, the parameters, and the function's associated block statement*/
 	   case FUNDEC:
                 /*print the type of the function*/
-                if( p->mytype == INTTYPE )
-                   printf( "INT " );
-               
-                if( p->mytype == VOIDTYPE )
-                   printf( "VOID " );
-               
-                if( p->mytype == BOOLTYPE )
-                   printf( "BOOLEAN " );
+                printType( p->mytype );
                
                 /*broadcast that a function node has been found and print the name */
                 printf( "FUNCTION %s \n( \n", p->name );
@@ -99,14 +97,7 @@ void ASTprint(int level,ASTnode *p)
                 else
                 {
                     /*if not void then it is a parameter list - print the type*/
-                    if( p->mytype == INTTYPE )
-                        printf( "PARAMETER INT " );
-                    
-                    if( p->mytype == VOIDTYPE )
-                        printf( "PARAMETER VOID " );
-                
-                    if( p->mytype == BOOLTYPE )
-                        printf( "PARAMETER BOOLEAN " );
+                    printType( p->mytype );
                     
                     /*print the name*/
                     printf( "%s", p->name );

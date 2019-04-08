@@ -77,6 +77,7 @@ typedef struct ASTnodetype
      enum ASTtype type;
      enum OPERATORS operator;
      enum SYSTEMTYPES mytype;
+     struct SymbTab *symbol;
      char * name;
      int value;
      struct ASTnodetype *next; //
@@ -87,6 +88,8 @@ typedef struct ASTnodetype
 ASTnode *ASTCreateNode(enum ASTtype mytype);
 
 void PT(int howmany);
+
+void printType( enum SYSTEMTYPES type );
 
 void ASTattachnext(ASTnode *p,ASTnode *q);
 

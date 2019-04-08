@@ -516,7 +516,7 @@ int yy_flex_debug = 0;
 
 char yytext[YYLMAX];
 char *yytext_ptr;
-#line 1 "lab6.l"
+#line 1 "lab7.l"
 /*Name: Vensan Cabardo
   Date: 3-11-2019
   Course: CS370 Compilers 
@@ -524,7 +524,7 @@ char *yytext_ptr;
   Input: a text file
   Output: A stream of tokens
 */
-#line 9 "lab6.l"
+#line 9 "lab7.l"
 
 int mydebug = 0; //setting this to 1 causes the program to print any single characters and reserved words that it comes across
 int mydebugconst = 0; //setting this to 1 causes the program to only print the numbers and variable names that are encountered
@@ -752,7 +752,7 @@ YY_DECL
 		}
 
 	{
-#line 22 "lab6.l"
+#line 22 "lab7.l"
 
 
 #line 758 "lex.yy.c"
@@ -824,7 +824,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 24 "lab6.l"
+#line 24 "lab7.l"
 {   /*this directive returns INT as a token to YACC upon encountering the string "int"*/
                                 if (mydebug) fprintf(stderr,"int found \n"); 
                                 return (INT); 
@@ -832,7 +832,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 29 "lab6.l"
+#line 29 "lab7.l"
 {   /*this directive returns VOID to YACC as a token upon encountering the string "void"*/
                                 if (mydebug) fprintf(stderr,"void found \n"); 
                                 return (VOID); 
@@ -840,7 +840,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 34 "lab6.l"
+#line 34 "lab7.l"
 {   /*this directive returns BOOLEAN as a token to YACC upon encountering the string "boolean"*/
                                 if (mydebug) fprintf(stderr,"boolean found \n"); 
                                 return (BOOLEAN); 
@@ -848,7 +848,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 39 "lab6.l"
+#line 39 "lab7.l"
 {   /*this directive returns BEGIN as a token to YACC upon encountering the string "begin"*/
                                 if (mydebug) fprintf(stderr,"begin found \n"); 
                                 return (BEG); 
@@ -856,7 +856,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 44 "lab6.l"
+#line 44 "lab7.l"
 {   /*this directive returns END as a token to YACC upon encountering the string "end"*/
                                 if (mydebug) fprintf(stderr,"end found\n"); 
                                 return (END); 
@@ -864,7 +864,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 49 "lab6.l"
+#line 49 "lab7.l"
 {   /*this directive returns IF as a token to YACC upon encountering the string "if"*/
                                 if (mydebug) fprintf(stderr,"if found\n"); 
                                 return (IF); 
@@ -872,7 +872,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 54 "lab6.l"
+#line 54 "lab7.l"
 {   /*this directive returns THEN as a token to YACC upon encountering the string "then"*/
                                 if (mydebug) fprintf(stderr,"then found\n"); 
                                 return (THEN); 
@@ -880,7 +880,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 59 "lab6.l"
+#line 59 "lab7.l"
 {   /*this directive returns ELSE as a token to YACC upon encountering the string "else"*/
                                 if (mydebug) fprintf(stderr,"else found\n"); 
                                 return (ELSE); 
@@ -888,7 +888,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 64 "lab6.l"
+#line 64 "lab7.l"
 {   /*this directive returns WHILE as a token to YACC upon encountering the string "while"*/
                                 if (mydebug) fprintf(stderr,"while found\n"); 
                                 return (WHILE); 
@@ -896,7 +896,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 69 "lab6.l"
+#line 69 "lab7.l"
 {   /*this directive returns DO as a token to YACC upon encountering the string "do"*/
                                 if (mydebug) fprintf(stderr,"do found\n"); 
                                 return (DO); 
@@ -904,7 +904,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 74 "lab6.l"
+#line 74 "lab7.l"
 {   /*this directive returns RETURN as a token to YACC upon encountering the string "return"*/
                                 if (mydebug) fprintf(stderr,"return found\n"); 
                                 return (RETURN); 
@@ -912,7 +912,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 79 "lab6.l"
+#line 79 "lab7.l"
 {   /*this directive returns READ as a token to YACC upon encountering the string "read"*/
                                 if (mydebug) fprintf(stderr,"read found\n"); 
                                 return (READ); 
@@ -920,7 +920,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 84 "lab6.l"
+#line 84 "lab7.l"
 {   /*this directive returns WRTIE as a token to YACC upon encountering the string "write"*/
                                 if (mydebug) fprintf(stderr,"write found\n"); 
                                 return (WRITE); 
@@ -928,7 +928,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 89 "lab6.l"
+#line 89 "lab7.l"
 {   /*this directive returns AND as a token to YACC upon encountering the string "and"*/
                                 if (mydebug) fprintf(stderr,"and found\n"); 
                                 return (AND); 
@@ -936,7 +936,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 94 "lab6.l"
+#line 94 "lab7.l"
 {   /*this directive returns OR as a token to YACC upon encountering the string "or"*/
                                 if (mydebug) fprintf(stderr,"or found\n"); 
                                 return (OR); 
@@ -944,7 +944,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 99 "lab6.l"
+#line 99 "lab7.l"
 {   /*this directive returns TRUE as a token to YACC upon encountering the string "true"*/
                                 if (mydebug) fprintf(stderr,"true found\n"); 
                                 return (TRUE); 
@@ -952,7 +952,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 104 "lab6.l"
+#line 104 "lab7.l"
 {   /*this directive returns FALSE as a token to YACC upon encountering the string "false"*/
                                 if (mydebug) fprintf(stderr,"false found\n"); 
                                 return (FALSE); 
@@ -960,7 +960,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 109 "lab6.l"
+#line 109 "lab7.l"
 {   /*this directive returns NOT as a token to YACC upon encountering the string "not"*/
                                 if (mydebug) fprintf(stderr,"not found\n"); 
                                 return (NOT); 
@@ -968,7 +968,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 114 "lab6.l"
+#line 114 "lab7.l"
 {   /*this directive simply prints a debug message if mydebug = 1*/
                                 //if (mydebug) fprintf(stderr,"whitespace found %c\n",*yytext);    
                             }
@@ -976,7 +976,7 @@ YY_RULE_SETUP
 case 20:
 /* rule 20 can match eol */
 YY_RULE_SETUP
-#line 118 "lab6.l"
+#line 118 "lab7.l"
 {   /*this directive increments the line count upon encountering a new line*/
                                 if (mydebug) fprintf(stderr,"carriage return\n");
                                 lineCount++; 
@@ -984,7 +984,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 123 "lab6.l"
+#line 123 "lab7.l"
 {	/*this regular expression indicates the format of a variable name - a letter followed by 0 or more digits/letters. */
                                 if (mydebugconst) fprintf(stderr,"ID found: %s\n", yytext); 
                                 yylval.string = strdup(yytext); //copy yytext to yylval.string 
@@ -993,7 +993,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 129 "lab6.l"
+#line 129 "lab7.l"
 {	/*returns NUMBER as a token after encountering a sequence of digits and prints a debug statement if mydebug = 1*/
                                 yylval.number=atoi((const char *)yytext); 
                                 if (mydebugconst) fprintf(stderr,"Number found: %d\n", yylval.number);
@@ -1002,7 +1002,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 136 "lab6.l"
+#line 136 "lab7.l"
 { 	/*action for encountering the single characters that are a part of our language - these don't have a value that needs to be sent to yacc, so only the symbol itself is sent*/
                                 if (mydebug) fprintf(stderr,"return a token %c\n",*yytext); 
                                 return (*yytext); //returns the character that was found
@@ -1010,31 +1010,31 @@ YY_RULE_SETUP
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 141 "lab6.l"
+#line 141 "lab7.l"
 {   if (mydebug) fprintf(stderr,"Token found: <=\n");  //return LTE as a token
                                 return(LTE);  }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 144 "lab6.l"
+#line 144 "lab7.l"
 {   if (mydebug) fprintf(stderr,"Token found: >=\n");   //return GTE as a token
                                 return(GTE);  }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 147 "lab6.l"
+#line 147 "lab7.l"
 {   if (mydebug) fprintf(stderr,"Token found: ==\n");   //return E as a token
                                 return(E);  }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 150 "lab6.l"
+#line 150 "lab7.l"
 {   if (mydebug) fprintf(stderr,"Token found: !=\n");   //return NE as a token
                                 return(NE);  }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 153 "lab6.l"
+#line 153 "lab7.l"
 ECHO;
 	YY_BREAK
 #line 1040 "lex.yy.c"
@@ -2054,7 +2054,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 153 "lab6.l"
+#line 153 "lab7.l"
 
 
 int yywrap(void)
