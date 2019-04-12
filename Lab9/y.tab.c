@@ -66,7 +66,7 @@
 
 
 /* First part of user prologue.  */
-#line 1 "lab7.y" /* yacc.c:337  */
+#line 1 "lab9.y" /* yacc.c:337  */
 
 
 /*Name: Vensan Cabardo
@@ -211,7 +211,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 55 "lab7.y" /* yacc.c:352  */
+#line 55 "lab9.y" /* yacc.c:352  */
 
     int number; //treat token as a 32 bit integer
     char *string; //treat token as a 32 bit pointer to a string
@@ -1402,7 +1402,7 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 82 "lab7.y" /* yacc.c:1652  */
+#line 82 "lab9.y" /* yacc.c:1652  */
     { 
                         myprogram = (yyvsp[0].node); /*store the final tree in myprogram so that we have a handle to it for printing*/
                     }
@@ -1410,7 +1410,7 @@ yyreduce:
     break;
 
   case 3:
-#line 89 "lab7.y" /* yacc.c:1652  */
+#line 89 "lab9.y" /* yacc.c:1652  */
     {  
                         (yyval.node) = (yyvsp[0].node); /*pass all declarations and their associated nodes to DECLIST*/
                     }
@@ -1418,7 +1418,7 @@ yyreduce:
     break;
 
   case 4:
-#line 93 "lab7.y" /* yacc.c:1652  */
+#line 93 "lab9.y" /* yacc.c:1652  */
     {   
                         (yyvsp[-1].node)->next = (yyvsp[0].node); /*next is used to connect sentences - it is used here to connect the different declarations in the tree*/
                         (yyval.node) = (yyvsp[-1].node); /*pass the reference to the nodes that have been built up to DECLIST*/
@@ -1427,7 +1427,7 @@ yyreduce:
     break;
 
   case 5:
-#line 102 "lab7.y" /* yacc.c:1652  */
+#line 102 "lab9.y" /* yacc.c:1652  */
     { 
                         (yyval.node) = (yyvsp[0].node); /*pass the reference to the vardec nodes that have been built up to DECLARATION*/
                     }
@@ -1435,7 +1435,7 @@ yyreduce:
     break;
 
   case 6:
-#line 106 "lab7.y" /* yacc.c:1652  */
+#line 106 "lab9.y" /* yacc.c:1652  */
     {
                         (yyval.node) = (yyvsp[0].node); /*pass the reference to the fundec nodes that have been built up to DECLARATION*/
                     }
@@ -1443,7 +1443,7 @@ yyreduce:
     break;
 
   case 7:
-#line 114 "lab7.y" /* yacc.c:1652  */
+#line 114 "lab9.y" /* yacc.c:1652  */
     {  
                         (yyval.node) = (yyvsp[-1].node); /*the VARDEC nodes that are created will be stored in VAR_LIST, so pass that reference up to VAR_DEC*/
                         
@@ -1460,7 +1460,7 @@ yyreduce:
     break;
 
   case 8:
-#line 133 "lab7.y" /* yacc.c:1652  */
+#line 133 "lab9.y" /* yacc.c:1652  */
     {
                         (yyval.node) = ASTCreateNode( VARDEC ); 
                         (yyval.node)->name = (yyvsp[0].string); 
@@ -1487,7 +1487,7 @@ yyreduce:
     break;
 
   case 9:
-#line 156 "lab7.y" /* yacc.c:1652  */
+#line 156 "lab9.y" /* yacc.c:1652  */
     {
                         (yyval.node) = ASTCreateNode( VARDEC );
                         (yyval.node)->name = (yyvsp[-3].string); 
@@ -1515,7 +1515,7 @@ yyreduce:
     break;
 
   case 10:
-#line 181 "lab7.y" /* yacc.c:1652  */
+#line 181 "lab9.y" /* yacc.c:1652  */
     {
                         (yyval.node) = ASTCreateNode( VARDEC ); 
                         (yyval.node)->name = (yyvsp[-2].string); 
@@ -1543,7 +1543,7 @@ yyreduce:
     break;
 
   case 11:
-#line 205 "lab7.y" /* yacc.c:1652  */
+#line 205 "lab9.y" /* yacc.c:1652  */
     {
                         (yyval.node) = ASTCreateNode( VARDEC ); 
                         (yyval.node)->name = (yyvsp[-5].string); 
@@ -1572,25 +1572,25 @@ yyreduce:
     break;
 
   case 12:
-#line 234 "lab7.y" /* yacc.c:1652  */
+#line 234 "lab9.y" /* yacc.c:1652  */
     { (yyval.type) = INTTYPE; }
 #line 1578 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 13:
-#line 235 "lab7.y" /* yacc.c:1652  */
+#line 235 "lab9.y" /* yacc.c:1652  */
     { (yyval.type) = VOIDTYPE; }
 #line 1584 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 14:
-#line 236 "lab7.y" /* yacc.c:1652  */
+#line 236 "lab9.y" /* yacc.c:1652  */
     { (yyval.type) = BOOLTYPE; }
 #line 1590 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 15:
-#line 243 "lab7.y" /* yacc.c:1652  */
+#line 243 "lab9.y" /* yacc.c:1652  */
     { 
                         struct SymbTab *p;
                         
@@ -1611,7 +1611,7 @@ yyreduce:
     break;
 
   case 16:
-#line 261 "lab7.y" /* yacc.c:1652  */
+#line 261 "lab9.y" /* yacc.c:1652  */
     {
                         // at this point the parameters are known - change the type of the entry in the symbol table
                         (Search( (yyvsp[-3].string), level, 0 ))->fparms = (yyvsp[0].node);
@@ -1620,7 +1620,7 @@ yyreduce:
     break;
 
   case 17:
-#line 267 "lab7.y" /* yacc.c:1652  */
+#line 267 "lab9.y" /* yacc.c:1652  */
     {
                         (yyval.node) = ASTCreateNode( FUNDEC );
                         (yyval.node)->symbol = Search( (yyvsp[-6].string), 0, 0 );
@@ -1640,7 +1640,7 @@ yyreduce:
     break;
 
   case 18:
-#line 288 "lab7.y" /* yacc.c:1652  */
+#line 288 "lab9.y" /* yacc.c:1652  */
     {
                         (yyval.node) = ASTCreateNode( PARAM );
                         (yyval.node)->mytype = VOIDTYPE;
@@ -1649,7 +1649,7 @@ yyreduce:
     break;
 
   case 19:
-#line 293 "lab7.y" /* yacc.c:1652  */
+#line 293 "lab9.y" /* yacc.c:1652  */
     { 
                         (yyval.node) = (yyvsp[0].node); 
                     }
@@ -1657,7 +1657,7 @@ yyreduce:
     break;
 
   case 20:
-#line 302 "lab7.y" /* yacc.c:1652  */
+#line 302 "lab9.y" /* yacc.c:1652  */
     { 
                         (yyval.node) = (yyvsp[0].node); 
                     }
@@ -1665,7 +1665,7 @@ yyreduce:
     break;
 
   case 21:
-#line 306 "lab7.y" /* yacc.c:1652  */
+#line 306 "lab9.y" /* yacc.c:1652  */
     { 
                         (yyval.node) = (yyvsp[-2].node); 
                         (yyval.node)->next = (yyvsp[0].node); 
@@ -1674,7 +1674,7 @@ yyreduce:
     break;
 
   case 22:
-#line 315 "lab7.y" /* yacc.c:1652  */
+#line 315 "lab9.y" /* yacc.c:1652  */
     {
                         (yyval.node) = ASTCreateNode( PARAM );
                         struct SymbTab *p;
@@ -1697,7 +1697,7 @@ yyreduce:
     break;
 
   case 23:
-#line 334 "lab7.y" /* yacc.c:1652  */
+#line 334 "lab9.y" /* yacc.c:1652  */
     {
                         (yyval.node) = ASTCreateNode( PARAM );
                         struct SymbTab *p;
@@ -1721,7 +1721,7 @@ yyreduce:
     break;
 
   case 24:
-#line 359 "lab7.y" /* yacc.c:1652  */
+#line 359 "lab9.y" /* yacc.c:1652  */
     { 
                         level++; //increment level upon entering a compound statement
                     }
@@ -1729,7 +1729,7 @@ yyreduce:
     break;
 
   case 25:
-#line 363 "lab7.y" /* yacc.c:1652  */
+#line 363 "lab9.y" /* yacc.c:1652  */
     {
                         (yyval.node) = ASTCreateNode( BLOCK );
                         (yyval.node)->s1 = (yyvsp[-2].node); //connect local decs to the block
@@ -1743,13 +1743,13 @@ yyreduce:
     break;
 
   case 26:
-#line 377 "lab7.y" /* yacc.c:1652  */
+#line 377 "lab9.y" /* yacc.c:1652  */
     { (yyval.node) = NULL; }
 #line 1749 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 27:
-#line 379 "lab7.y" /* yacc.c:1652  */
+#line 379 "lab9.y" /* yacc.c:1652  */
     {
                         (yyval.node) = (yyvsp[-1].node);
                         (yyval.node)->next = (yyvsp[0].node);  //connect multiple declarations together
@@ -1758,13 +1758,13 @@ yyreduce:
     break;
 
   case 28:
-#line 388 "lab7.y" /* yacc.c:1652  */
+#line 388 "lab9.y" /* yacc.c:1652  */
     { (yyval.node) = NULL; }
 #line 1764 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 29:
-#line 390 "lab7.y" /* yacc.c:1652  */
+#line 390 "lab9.y" /* yacc.c:1652  */
     {
                         (yyval.node) = (yyvsp[-1].node);
                         (yyval.node)->next = (yyvsp[0].node); //connect multiple statements together
@@ -1773,55 +1773,55 @@ yyreduce:
     break;
 
   case 30:
-#line 399 "lab7.y" /* yacc.c:1652  */
+#line 399 "lab9.y" /* yacc.c:1652  */
     { (yyval.node) = (yyvsp[0].node); }
 #line 1779 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 31:
-#line 400 "lab7.y" /* yacc.c:1652  */
+#line 400 "lab9.y" /* yacc.c:1652  */
     { (yyval.node) = (yyvsp[0].node); }
 #line 1785 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 32:
-#line 401 "lab7.y" /* yacc.c:1652  */
+#line 401 "lab9.y" /* yacc.c:1652  */
     { (yyval.node) = (yyvsp[0].node); }
 #line 1791 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 33:
-#line 402 "lab7.y" /* yacc.c:1652  */
+#line 402 "lab9.y" /* yacc.c:1652  */
     { (yyval.node) = (yyvsp[0].node); }
 #line 1797 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 34:
-#line 403 "lab7.y" /* yacc.c:1652  */
+#line 403 "lab9.y" /* yacc.c:1652  */
     { (yyval.node) = (yyvsp[0].node); }
 #line 1803 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 35:
-#line 404 "lab7.y" /* yacc.c:1652  */
+#line 404 "lab9.y" /* yacc.c:1652  */
     { (yyval.node) = (yyvsp[0].node); }
 #line 1809 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 36:
-#line 405 "lab7.y" /* yacc.c:1652  */
+#line 405 "lab9.y" /* yacc.c:1652  */
     { (yyval.node) = (yyvsp[0].node); }
 #line 1815 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 37:
-#line 406 "lab7.y" /* yacc.c:1652  */
+#line 406 "lab9.y" /* yacc.c:1652  */
     { (yyval.node) = (yyvsp[0].node); }
 #line 1821 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 38:
-#line 412 "lab7.y" /* yacc.c:1652  */
+#line 412 "lab9.y" /* yacc.c:1652  */
     { 
                         (yyval.node) = ASTCreateNode( EXPRESSSTMT ); //create am expression statement node
                         (yyval.node)->s1 = (yyvsp[-1].node); //reference the expression using s1
@@ -1830,7 +1830,7 @@ yyreduce:
     break;
 
   case 39:
-#line 417 "lab7.y" /* yacc.c:1652  */
+#line 417 "lab9.y" /* yacc.c:1652  */
     { 
                         (yyval.node) = ASTCreateNode( EXPRESSSTMT ); //create an expression statement node
                     }
@@ -1838,7 +1838,7 @@ yyreduce:
     break;
 
   case 40:
-#line 424 "lab7.y" /* yacc.c:1652  */
+#line 424 "lab9.y" /* yacc.c:1652  */
     {
                         (yyval.node) = ASTCreateNode( IFTHEN );
                         (yyval.node)->s1 = (yyvsp[-2].node); //reference the expression
@@ -1848,7 +1848,7 @@ yyreduce:
     break;
 
   case 41:
-#line 430 "lab7.y" /* yacc.c:1652  */
+#line 430 "lab9.y" /* yacc.c:1652  */
     {
                         (yyval.node) = ASTCreateNode( IFTHEN );
                         (yyval.node)->s1 = (yyvsp[-4].node); //reference the expression
@@ -1860,7 +1860,7 @@ yyreduce:
     break;
 
   case 42:
-#line 443 "lab7.y" /* yacc.c:1652  */
+#line 443 "lab9.y" /* yacc.c:1652  */
     {
                         (yyval.node) = ASTCreateNode( WHILEST );
                         (yyval.node)->s1 = (yyvsp[-2].node); //connect expressions to the while node
@@ -1870,7 +1870,7 @@ yyreduce:
     break;
 
   case 43:
-#line 452 "lab7.y" /* yacc.c:1652  */
+#line 452 "lab9.y" /* yacc.c:1652  */
     {
                         (yyval.node) = ASTCreateNode( RET ); //simply create a return node without assigning any other values
                     }
@@ -1878,7 +1878,7 @@ yyreduce:
     break;
 
   case 44:
-#line 456 "lab7.y" /* yacc.c:1652  */
+#line 456 "lab9.y" /* yacc.c:1652  */
     {
                         (yyval.node) = ASTCreateNode( RET );
                         (yyval.node)->s1 = (yyvsp[-1].node); //connect the expression that is associated with the return statement using s1
@@ -1887,7 +1887,7 @@ yyreduce:
     break;
 
   case 45:
-#line 464 "lab7.y" /* yacc.c:1652  */
+#line 464 "lab9.y" /* yacc.c:1652  */
     {
                         (yyval.node) = ASTCreateNode( READST ); 
                         (yyval.node)->s1 = (yyvsp[-1].node); //connect the variable to the read statement using s1
@@ -1896,7 +1896,7 @@ yyreduce:
     break;
 
   case 46:
-#line 472 "lab7.y" /* yacc.c:1652  */
+#line 472 "lab9.y" /* yacc.c:1652  */
     {
                         (yyval.node) = ASTCreateNode( WRITEST );
                         (yyval.node)->s1 = (yyvsp[-1].node); //connect the expression to the write statement using s1
@@ -1905,7 +1905,7 @@ yyreduce:
     break;
 
   case 47:
-#line 480 "lab7.y" /* yacc.c:1652  */
+#line 480 "lab9.y" /* yacc.c:1652  */
     {
                         //in assignment the type of the LHS must match that of the RHS. Verify that here.
                         if( (yyvsp[-3].node)->mytype == (yyvsp[-1].node)->mytype )
@@ -1936,7 +1936,7 @@ yyreduce:
     break;
 
   case 48:
-#line 510 "lab7.y" /* yacc.c:1652  */
+#line 510 "lab9.y" /* yacc.c:1652  */
     { 
                         (yyval.node) = (yyvsp[0].node);
                     }
@@ -1944,7 +1944,7 @@ yyreduce:
     break;
 
   case 49:
-#line 517 "lab7.y" /* yacc.c:1652  */
+#line 517 "lab9.y" /* yacc.c:1652  */
     {
                         struct SymbTab *p;
                         
@@ -1976,7 +1976,7 @@ yyreduce:
     break;
 
   case 50:
-#line 545 "lab7.y" /* yacc.c:1652  */
+#line 545 "lab9.y" /* yacc.c:1652  */
     {
                         struct SymbTab *p;
                         
@@ -2011,7 +2011,7 @@ yyreduce:
     break;
 
   case 51:
-#line 579 "lab7.y" /* yacc.c:1652  */
+#line 579 "lab9.y" /* yacc.c:1652  */
     {
                         (yyval.node) = (yyvsp[0].node);
                     }
@@ -2019,7 +2019,7 @@ yyreduce:
     break;
 
   case 52:
-#line 583 "lab7.y" /* yacc.c:1652  */
+#line 583 "lab9.y" /* yacc.c:1652  */
     {
                         //check if the type of the left operand matches that of the right operand
                         
@@ -2056,43 +2056,43 @@ yyreduce:
     break;
 
   case 53:
-#line 619 "lab7.y" /* yacc.c:1652  */
+#line 619 "lab9.y" /* yacc.c:1652  */
     { (yyval.operator) = LTEQ; }
 #line 2062 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 54:
-#line 620 "lab7.y" /* yacc.c:1652  */
+#line 620 "lab9.y" /* yacc.c:1652  */
     { (yyval.operator) = LT; }
 #line 2068 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 55:
-#line 621 "lab7.y" /* yacc.c:1652  */
+#line 621 "lab9.y" /* yacc.c:1652  */
     { (yyval.operator) = GT; }
 #line 2074 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 56:
-#line 622 "lab7.y" /* yacc.c:1652  */
+#line 622 "lab9.y" /* yacc.c:1652  */
     { (yyval.operator) = GTEQ; }
 #line 2080 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 57:
-#line 623 "lab7.y" /* yacc.c:1652  */
+#line 623 "lab9.y" /* yacc.c:1652  */
     { (yyval.operator) = EQ; }
 #line 2086 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 58:
-#line 624 "lab7.y" /* yacc.c:1652  */
+#line 624 "lab9.y" /* yacc.c:1652  */
     { (yyval.operator) = NEQ; }
 #line 2092 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 59:
-#line 629 "lab7.y" /* yacc.c:1652  */
+#line 629 "lab9.y" /* yacc.c:1652  */
     { 
                         (yyval.node) = (yyvsp[0].node);
                     }
@@ -2100,7 +2100,7 @@ yyreduce:
     break;
 
   case 60:
-#line 633 "lab7.y" /* yacc.c:1652  */
+#line 633 "lab9.y" /* yacc.c:1652  */
     {
                         //don't allow expressions with void
                         if( (yyvsp[-2].node)->mytype == VOIDTYPE || (yyvsp[0].node)->mytype == VOIDTYPE )
@@ -2136,19 +2136,19 @@ yyreduce:
     break;
 
   case 61:
-#line 668 "lab7.y" /* yacc.c:1652  */
+#line 668 "lab9.y" /* yacc.c:1652  */
     { (yyval.operator) = PLUS; }
 #line 2142 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 62:
-#line 669 "lab7.y" /* yacc.c:1652  */
+#line 669 "lab9.y" /* yacc.c:1652  */
     { (yyval.operator) = MINUS; }
 #line 2148 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 63:
-#line 674 "lab7.y" /* yacc.c:1652  */
+#line 674 "lab9.y" /* yacc.c:1652  */
     { 
                         (yyval.node) = (yyvsp[0].node); 
                     }
@@ -2156,7 +2156,7 @@ yyreduce:
     break;
 
   case 64:
-#line 678 "lab7.y" /* yacc.c:1652  */
+#line 678 "lab9.y" /* yacc.c:1652  */
     {
                         //don't allow expressions with void
                         if( (yyvsp[-2].node)->mytype == VOIDTYPE || (yyvsp[0].node)->mytype == VOIDTYPE )
@@ -2192,31 +2192,31 @@ yyreduce:
     break;
 
   case 65:
-#line 713 "lab7.y" /* yacc.c:1652  */
+#line 713 "lab9.y" /* yacc.c:1652  */
     { (yyval.operator) = MULTIPLY; }
 #line 2198 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 66:
-#line 714 "lab7.y" /* yacc.c:1652  */
+#line 714 "lab9.y" /* yacc.c:1652  */
     { (yyval.operator) = DIVIDE; }
 #line 2204 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 67:
-#line 715 "lab7.y" /* yacc.c:1652  */
+#line 715 "lab9.y" /* yacc.c:1652  */
     { (yyval.operator) = ANDOP; }
 #line 2210 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 68:
-#line 716 "lab7.y" /* yacc.c:1652  */
+#line 716 "lab9.y" /* yacc.c:1652  */
     { (yyval.operator) = OROP; }
 #line 2216 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 69:
-#line 721 "lab7.y" /* yacc.c:1652  */
+#line 721 "lab9.y" /* yacc.c:1652  */
     {
                         (yyval.node) = (yyvsp[-1].node); //pass the reference to the expression to factor
                     }
@@ -2224,7 +2224,7 @@ yyreduce:
     break;
 
   case 70:
-#line 725 "lab7.y" /* yacc.c:1652  */
+#line 725 "lab9.y" /* yacc.c:1652  */
     { 
                         (yyval.node) = ASTCreateNode( NUM ); //create a new node
                         (yyval.node)->mytype = INTTYPE; //set the type
@@ -2234,19 +2234,19 @@ yyreduce:
     break;
 
   case 71:
-#line 730 "lab7.y" /* yacc.c:1652  */
+#line 730 "lab9.y" /* yacc.c:1652  */
     { (yyval.node) = (yyvsp[0].node); }
 #line 2240 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 72:
-#line 731 "lab7.y" /* yacc.c:1652  */
+#line 731 "lab9.y" /* yacc.c:1652  */
     { (yyval.node) = (yyvsp[0].node); }
 #line 2246 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 73:
-#line 733 "lab7.y" /* yacc.c:1652  */
+#line 733 "lab9.y" /* yacc.c:1652  */
     {
                         /*true is equivalent to 1*/
                         (yyval.node) = ASTCreateNode( NUM );
@@ -2257,7 +2257,7 @@ yyreduce:
     break;
 
   case 74:
-#line 740 "lab7.y" /* yacc.c:1652  */
+#line 740 "lab9.y" /* yacc.c:1652  */
     {
                         /*false is equivalent to 0*/
                         (yyval.node) = ASTCreateNode( NUM );
@@ -2268,7 +2268,7 @@ yyreduce:
     break;
 
   case 75:
-#line 747 "lab7.y" /* yacc.c:1652  */
+#line 747 "lab9.y" /* yacc.c:1652  */
     { 
                         (yyval.node) = ASTCreateNode( EXPRESS ); 
                         (yyval.node)->operator = MYNOT; //assign the operator to be NOT
@@ -2278,7 +2278,7 @@ yyreduce:
     break;
 
   case 76:
-#line 756 "lab7.y" /* yacc.c:1652  */
+#line 756 "lab9.y" /* yacc.c:1652  */
     {
                         struct SymbTab *p;
                         
@@ -2316,19 +2316,19 @@ yyreduce:
     break;
 
   case 77:
-#line 792 "lab7.y" /* yacc.c:1652  */
+#line 792 "lab9.y" /* yacc.c:1652  */
     { (yyval.node) = (yyvsp[0].node); }
 #line 2322 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 78:
-#line 793 "lab7.y" /* yacc.c:1652  */
+#line 793 "lab9.y" /* yacc.c:1652  */
     { (yyval.node) = NULL; }
 #line 2328 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 79:
-#line 798 "lab7.y" /* yacc.c:1652  */
+#line 798 "lab9.y" /* yacc.c:1652  */
     { 
                         (yyval.node) = ASTCreateNode( ARG ); //create an arg node
                         (yyval.node)->s1 = (yyvsp[0].node); //connect the expression using s1
@@ -2338,7 +2338,7 @@ yyreduce:
     break;
 
   case 80:
-#line 804 "lab7.y" /* yacc.c:1652  */
+#line 804 "lab9.y" /* yacc.c:1652  */
     { 
                         (yyval.node) = ASTCreateNode( ARG ); //create an arg node
                         (yyval.node)->s1 = (yyvsp[-2].node); //connect the expression using s1
@@ -2580,7 +2580,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 813 "lab7.y" /* yacc.c:1918  */
+#line 813 "lab9.y" /* yacc.c:1918  */
 	/* end of rules, start of program */
 
 /*returns the maximum of two digits*/

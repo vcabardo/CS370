@@ -845,14 +845,26 @@ int CompareParams( ASTnode *formal, ASTnode *actual )
 }
 
 
-int main()
+int main( int argc, char *argv [])
 { 
-    /*yyparse will return 0 if no syntax errors and the whole program was parsed. In this case, print a success message*/
-    if( yyparse() == 0 )
+    int i;
+    
+    for( i = 0 ; i < c ; i++ )
     {
-        //printf( "The program is syntactically correct.\n" );
-        //ASTprint( 0, myprogram );
-        printf( "Main Symbol Table Start: \n" );
-        Display(); //print global variables after parsing
+        if( strcmp( argv[ i ],  "-d" ) )
+        {
+            debugsw = 1;
+        }
+        
+        if( strcmp( 
     }
+    
+        /*yyparse will return 0 if no syntax errors and the whole program was parsed. In this case, print a success message*/
+//     if( yyparse() == 0 )
+//     {
+//         //printf( "The program is syntactically correct.\n" );
+//         //ASTprint( 0, myprogram );
+//         printf( "Main Symbol Table Start: \n" );
+//         Display(); //print global variables after parsing
+//     }
 }
