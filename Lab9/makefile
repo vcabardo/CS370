@@ -5,5 +5,5 @@
 all: 
 	yacc -d lab9.y
 	lex lab9.l
-	gcc y.tab.c lex.yy.c ast.c symtable.c -o lab9
+	gcc y.tab.c lex.yy.c ast.c symtable.c EMITAST.c -o lab9
 	

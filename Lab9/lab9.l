@@ -146,6 +146,12 @@ not                         {   /*this directive returns NOT as a token to YACC 
 
 [!][=]                      {   if (mydebug) fprintf(stderr,"Token found: !=\n");   //return NE as a token
                                 return(NE);  }
+                                
+\".*\"                      {	/*this regular expression indicates the format of string*/
+                                if (mydebugconst) fprintf(stderr,"String found: %s\n", yytext); 
+                                yylval.string = strdup(yytext); //copy yytext to yylval.string 
+                                return(STRING); //return ID as a token
+                            }
 
 %%
 

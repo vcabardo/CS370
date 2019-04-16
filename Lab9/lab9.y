@@ -13,8 +13,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <string.h>
 #include "symtable.h"
 #include "ast.h"
+#include "EMITAST.h"
 
 //for readability, define the constants to be used for the IsAFunc parameter of the Insert function
 #define TYPE_SCALAR 0
@@ -62,9 +64,8 @@ void yyerror (s)  /* Called by yyparse on error */
 
 /*define the tokens that will be used by yacc to check for syntax correctness - these were the bold elements in the grammar definition of this language.*/ 
 %token <number> NUMBER
-%token <string> ID
-%token BEG END IF THEN ELSE WHILE DO RETURN READ WRITE AND OR TRUE FALSE NOT 
-
+%token <string> ID STRING
+%token BEG END IF THEN ELSE WHILE DO RETURN READ WRITE AND OR TRUE FALSE NOT
 /*define operator as a type for arithmetic operators and relational operators*/
 %token<operator> LTE GTE E NE 
 %type<operator> RELOP ADDOP MULTOP
@@ -250,7 +251,7 @@ FUN_DEC         :   TYPE ID '('
                         //otherwise broadcast an error
                         else
                         {
-                            yyerror( "%s HAS ALREADY BEEN DECLARED", $2 );
+                            yyerror( "MULTIPLE FUNCTION DECLARATION" );
                         }
                             
                         goffset = offset; //set global offset before resetting offset
@@ -473,6 +474,14 @@ WRITE_STMT      :   WRITE EXPR ';'
                         $$ = ASTCreateNode( WRITEST );
                         $$->s1 = $2; //connect the expression to the write statement using s1
                     }
+                    
+                |   WRITE STRING ';'
+                    {
+                        $$ = ASTCreateNode( WRITEST );
+                        $$->name = Get_Global_Label(); //connect the expression to the write statement using s1
+                        $$->s1 = ASTCreateNode( STR );
+                        $$->s1->name = $2;
+                    }
                 ;
                 
 /*assignment-stmt -> var = expression-statement ;*/
@@ -494,6 +503,9 @@ ASSIGN_STMT     :   VAR '=' SIMP_EXPR ';'
                                 $$->mytype = $1->mytype; //inherit the type
                                 $$->s1 = $1; //connect the variable part of assignment using s1
                                 $$->s2 = $3; //connect the expression part of the assignment using s2
+                                $$->name = CreateTemp();
+                                $$->symbol = Insert( $$->name, offset, level, 1, TYPE_SCALAR, NULL, $$->mytype );
+                                offset++;
                             }
                         }
                         
@@ -745,9 +757,18 @@ FACTOR          :   '(' EXPR ')'
                     }
                 |   NOT FACTOR 
                     { 
-                        $$ = ASTCreateNode( EXPRESS ); 
-                        $$->operator = MYNOT; //assign the operator to be NOT
-                        $$->s1 = $2; //have this expression node reference factor through s1
+                        if( $2->type == BOOLTYPE )
+                        {
+                            $$ = ASTCreateNode( EXPRESS ); 
+                            $$->type = BOOLTYPE;
+                            $$->operator = MYNOT; //assign the operator to be NOT
+                            $$->s1 = $2; //have this expression node reference factor through s1
+                        }
+                        else
+                        {
+                            yyerror( "CANNOT USE NOT ON A NON-BOOLEAN VALUE" );
+                            exit( 1 );
+                        }
                     }
                 ;
                 
@@ -848,17 +869,46 @@ int CompareParams( ASTnode *formal, ASTnode *actual )
 int main( int argc, char *argv [])
 { 
     int i;
+    char filename[100]; //array to store the filename after concatenating the .asm extension
+    FILE *fp = NULL; //will point to the file that is to be edited/created
     
-    for( i = 0 ; i < c ; i++ )
+    for( i = 0 ; i < argc ; i++ )
     {
-        if( strcmp( argv[ i ],  "-d" ) )
+        if( strcmp( argv[ i ],  "-d" ) == 0 ) //if "-d" is an argument
         {
-            debugsw = 1;
+            debugsw = 1; //toggle the debug variable
         }
         
-        if( strcmp( 
+        if( strcmp( argv[ i ],  "-o" ) == 0 )
+        {
+            strcpy( filename, argv[ i + 1 ] );
+            strcat( filename, ".asm" ); //concatenate the .asm extension
+            
+            if( debugsw )
+                printf( "The created filename is %s\n", filename );
+                
+            fp = fopen( filename, "w" ); //create an empty file for writing the machine instructions or open an existing one - if null is returned fopen failed
+            
+            if( fp == NULL ) //check if opening the file was successful
+            {
+                fprintf( stderr, "Cannot open %s\n", filename );
+            }
+        }
     }
     
+    yyparse();
+    
+    if( fp != NULL )
+    {
+        Emit_Program( fp, myprogram );
+    }
+    
+    else
+    {
+        printf( "No output file specified. No action\n" );
+    }
+    
+    fclose( fp );
         /*yyparse will return 0 if no syntax errors and the whole program was parsed. In this case, print a success message*/
 //     if( yyparse() == 0 )
 //     {

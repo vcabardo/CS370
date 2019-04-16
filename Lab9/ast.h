@@ -42,7 +42,8 @@ enum ASTtype {
     ELSEST,
     MYNOT,
     ARG,
-    EXPRESSSTMT
+    EXPRESSSTMT,
+    STR
 };
 
 /*define the relevant operators used by our language*/

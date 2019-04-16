@@ -17,7 +17,7 @@ ASTnode *ASTCreateNode(enum ASTtype mytype)
     p=(ASTnode *)malloc(sizeof(ASTnode));
     p->type = mytype; //corresponds to int, void, or boolean for this language
     p->name = NULL; 
-    p->value = 0; //if the node being declared is an id or vardec with an array, use this field to store size
+    p->value = 1; //if the node being declared is an id or vardec with an array, use this field to store size
     p->next = NULL;
     p->s1=NULL;
     p->s2=NULL;

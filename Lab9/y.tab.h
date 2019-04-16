@@ -51,62 +51,64 @@ extern int yydebug;
   {
     NUMBER = 258,
     ID = 259,
-    BEG = 260,
-    END = 261,
-    IF = 262,
-    THEN = 263,
-    ELSE = 264,
-    WHILE = 265,
-    DO = 266,
-    RETURN = 267,
-    READ = 268,
-    WRITE = 269,
-    AND = 270,
-    OR = 271,
-    TRUE = 272,
-    FALSE = 273,
-    NOT = 274,
-    LTE = 275,
-    GTE = 276,
-    E = 277,
-    NE = 278,
-    INT = 279,
-    VOID = 280,
-    BOOLEAN = 281
+    STRING = 260,
+    BEG = 261,
+    END = 262,
+    IF = 263,
+    THEN = 264,
+    ELSE = 265,
+    WHILE = 266,
+    DO = 267,
+    RETURN = 268,
+    READ = 269,
+    WRITE = 270,
+    AND = 271,
+    OR = 272,
+    TRUE = 273,
+    FALSE = 274,
+    NOT = 275,
+    LTE = 276,
+    GTE = 277,
+    E = 278,
+    NE = 279,
+    INT = 280,
+    VOID = 281,
+    BOOLEAN = 282
   };
 #endif
 /* Tokens.  */
 #define NUMBER 258
 #define ID 259
-#define BEG 260
-#define END 261
-#define IF 262
-#define THEN 263
-#define ELSE 264
-#define WHILE 265
-#define DO 266
-#define RETURN 267
-#define READ 268
-#define WRITE 269
-#define AND 270
-#define OR 271
-#define TRUE 272
-#define FALSE 273
-#define NOT 274
-#define LTE 275
-#define GTE 276
-#define E 277
-#define NE 278
-#define INT 279
-#define VOID 280
-#define BOOLEAN 281
+#define STRING 260
+#define BEG 261
+#define END 262
+#define IF 263
+#define THEN 264
+#define ELSE 265
+#define WHILE 266
+#define DO 267
+#define RETURN 268
+#define READ 269
+#define WRITE 270
+#define AND 271
+#define OR 272
+#define TRUE 273
+#define FALSE 274
+#define NOT 275
+#define LTE 276
+#define GTE 277
+#define E 278
+#define NE 279
+#define INT 280
+#define VOID 281
+#define BOOLEAN 282
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 
 union YYSTYPE
 {
-#line 55 "lab9.y" /* yacc.c:1921  */
+#line 57 "lab9.y" /* yacc.c:1921  */
 
     int number; //treat token as a 32 bit integer
     char *string; //treat token as a 32 bit pointer to a string
@@ -114,7 +116,7 @@ union YYSTYPE
     enum OPERATORS operator; //allow some productions to be operators
     enum SYSTEMTYPES type; //allow some productions to be types
 
-#line 118 "y.tab.h" /* yacc.c:1921  */
+#line 120 "y.tab.h" /* yacc.c:1921  */
 };
 
 typedef union YYSTYPE YYSTYPE;
